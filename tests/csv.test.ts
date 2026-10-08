@@ -40,6 +40,12 @@ describe('parseCsvNames', () => {
     expect(parseCsvNames('ПІБ\tКлас\nІван  Франко\t5-А\n\n\t\n')).toEqual(['Іван Франко 5-А']);
   });
 
+  it('detects header words in the middle of descriptive labels', () => {
+    expect(parseCsvNames('Повне ім’я учня\nТарас Шевченко')).toEqual(['Тарас Шевченко']);
+    expect(parseCsvNames('Вкажіть ПІБ дитини;Клас\nЛеся Українка;5-А')).toEqual(['Леся Українка 5-А']);
+    expect(parseCsvNames('Student full name\nIvan Franko')).toEqual(['Ivan Franko']);
+  });
+
   it('does not drop a first row that is a real name', () => {
     expect(parseCsvNames('Тарас;Шевченко\nЛеся;Українка')).toEqual(['Тарас Шевченко', 'Леся Українка']);
   });
