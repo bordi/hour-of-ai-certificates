@@ -5,6 +5,7 @@ import { renderCertificates, type Assets } from './certificate';
 import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
+import { pluralUk } from './plural';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -20,6 +21,8 @@ const preview = new Preview($<HTMLCanvasElement>('preview-canvas'));
 
 let assets: Assets | null = null;
 let generated: { names: string[]; combinedUrl: string } | null = null;
+// Bumped on every list edit; async handlers capture it and bail if it changed.
+let version = 0;
 
 function setStatus(text: string, isError = false) {
   status.textContent = text;
@@ -32,6 +35,7 @@ function updatePager() {
 }
 
 function invalidate() {
+  version++;
   if (!generated) return;
   URL.revokeObjectURL(generated.combinedUrl);
   generated = null;
@@ -62,7 +66,7 @@ fileInput.addEventListener('change', async () => {
   }
   textarea.value = names.join('\n');
   textarea.dispatchEvent(new Event('input'));
-  setStatus(`Завантажено ${names.length} імен з файлу «${file.name}». Перевірте список.`);
+  setStatus(`Завантажено ${names.length} ${pluralUk(names.length, 'ім’я', 'імені', 'імен')} з файлу «${file.name}». Перевірте список.`);
 });
 
 generateBtn.addEventListener('click', async () => {
@@ -71,23 +75,34 @@ generateBtn.addEventListener('click', async () => {
   if (names.length === 0) return setStatus('Додайте хоча б одне ім’я.', true);
   if (names.length > MAX_NAMES) return setStatus(`Забагато імен: максимум ${MAX_NAMES}.`, true);
 
+  const myVersion = version;
+  const stale = () => myVersion !== version;
   generateBtn.disabled = true;
   setStatus('Формуємо сертифікати…');
+  let url: string | null = null;
   try {
     const combined = await renderCertificates(assets, names);
-    if (generated) URL.revokeObjectURL(generated.combinedUrl);
-    generated = {
-      names,
-      combinedUrl: URL.createObjectURL(new Blob([combined as Uint8Array<ArrayBuffer>], { type: 'application/pdf' })),
-    };
+    if (stale()) return;
+    url = URL.createObjectURL(new Blob([combined as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
     await preview.show(combined);
+    if (stale()) {
+      // List changed while the preview loaded: discard and restore the blank template.
+      URL.revokeObjectURL(url);
+      url = null;
+      await preview.show(assets.template);
+      return;
+    }
+    if (generated) URL.revokeObjectURL(generated.combinedUrl);
+    generated = { names, combinedUrl: url };
+    url = null;
     downloadBtn.disabled = false;
     printBtn.disabled = false;
     updatePager();
-    setStatus(`Готово: ${names.length} сертифікатів.`);
+    setStatus(`Готово: ${names.length} ${pluralUk(names.length, 'сертифікат', 'сертифікати', 'сертифікатів')}.`);
   } catch (e) {
+    if (url) URL.revokeObjectURL(url);
     console.error(e);
-    setStatus('Не вдалося сформувати сертифікати. Спробуйте ще раз.', true);
+    if (!stale()) setStatus('Не вдалося сформувати сертифікати. Спробуйте ще раз.', true);
   } finally {
     generateBtn.disabled = false;
   }
@@ -95,15 +110,22 @@ generateBtn.addEventListener('click', async () => {
 
 downloadBtn.addEventListener('click', async () => {
   if (!generated || !assets) return;
-  const { names } = generated;
+  const gen = generated;
+  const { names } = gen;
+  const myVersion = version;
+  const stale = () => myVersion !== version || generated !== gen;
   downloadBtn.disabled = true;
   try {
     const entries = [];
     for (let i = 0; i < names.length; i++) {
+      if (stale()) return;
       setStatus(`Готуємо архів… ${i + 1} / ${names.length}`);
-      entries.push({ name: certificateFileName(i, names.length, names[i]), data: await renderCertificates(assets, [names[i]]) });
+      const data = await renderCertificates(assets, [names[i]]);
+      if (stale()) return;
+      entries.push({ name: certificateFileName(i, names.length, names[i]), data });
     }
     const zip = await buildZip(entries);
+    if (stale()) return;
     const url = URL.createObjectURL(new Blob([zip as Uint8Array<ArrayBuffer>], { type: 'application/zip' }));
     const a = document.createElement('a');
     a.href = url;
@@ -113,7 +135,7 @@ downloadBtn.addEventListener('click', async () => {
     setStatus('Архів завантажено.');
   } catch (e) {
     console.error(e);
-    setStatus('Не вдалося створити архів.', true);
+    if (!stale()) setStatus('Не вдалося створити архів.', true);
   } finally {
     downloadBtn.disabled = !generated;
   }

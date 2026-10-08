@@ -8,6 +8,7 @@ export class Preview {
   private doc: PDFDocumentProxy | null = null;
   private task: RenderTask | null = null;
   private seq = 0;
+  private showSeq = 0;
   page = 1;
 
   constructor(private canvas: HTMLCanvasElement) {}
@@ -17,8 +18,15 @@ export class Preview {
   }
 
   async show(bytes: Uint8Array): Promise<void> {
+    const mine = ++this.showSeq;
+    const loadingTask = pdfjs.getDocument({ data: bytes.slice() });
+    const doc = await loadingTask.promise;
+    if (mine !== this.showSeq) {
+      void loadingTask.destroy(); // a newer show() started; drop this stale load
+      return;
+    }
     const old = this.doc;
-    this.doc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
+    this.doc = doc;
     void old?.loadingTask.destroy();
     this.page = 1;
     await this.render();
