@@ -23,6 +23,7 @@ h1 { margin: 0 0 4px; font-size: 28px; color: var(--blue); }
 textarea { width: 100%; min-height: 360px; resize: vertical; padding: 12px; font: inherit; line-height: 1.5; border: 1px solid var(--line); border-radius: 8px; }
 .input-row { display: flex; justify-content: space-between; align-items: center; }
 .hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint a { color: var(--blue); }
 button, .file-button { font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--blue); background: #fff; color: var(--blue); cursor: pointer; }
 button.primary { background: var(--blue); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
