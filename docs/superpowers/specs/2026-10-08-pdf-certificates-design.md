@@ -15,7 +15,7 @@ in one go.
 |---|---|
 | Hosting | Static site on Netlify (free tier). No backend. |
 | Processing | 100% client-side. Student names never leave the browser. |
-| Fields | Student name only. Printed exactly as entered (no reordering). |
+| Fields | Student name only. Printed as entered (no reordering). Only normalisation: extra spaces collapsed, and apostrophe variants `' ʼ `` ` `` → `’`, because the font has no `ʼ` glyph. |
 | Input | Textarea, one name per line **and** CSV/TXT upload (v1). Upload fills the textarea so the teacher can review/edit. |
 | Paper | A4 landscape (842×595 pt), same as template. |
 | Font | Wix Madefor Display Bold, from the Google Fonts release (OFL, has Cyrillic). The locally installed "Wix Madefor … App" fonts have **no Cyrillic** — do not use them. |
@@ -44,7 +44,7 @@ in one go.
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Сформувати**: parse names → generate one PDF per name + one combined PDF → preview switches to carousel.
+- **Сформувати**: parse names → generate the combined PDF (one page per name) → preview switches to carousel. Per-name PDFs are generated lazily when Download is clicked, with progress shown.
 - **Завантажити**: `sertyfikaty.zip` with `01_Shevchenko_Taras.pdf`, … (KMU-2010 transliteration, numbered, ASCII-only to avoid zip encoding issues on Windows).
 - **Друкувати**: opens the combined PDF (one page per student) in a new tab; teacher prints once. (Programmatic `print()` on embedded PDFs is unreliable, notably in Safari.)
 - Download/Print are disabled until generated, and disabled again when the list changes after generation.

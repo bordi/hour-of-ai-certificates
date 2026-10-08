@@ -48,9 +48,11 @@ npm init -y
 npm pkg set name=hour-of-ai-certificates private=true type=module
 npm pkg delete main
 npm pkg set scripts.dev="vite" scripts.build="tsc --noEmit && vite build" scripts.preview="vite preview" scripts.test="vitest run"
-npm i pdf-lib @pdf-lib/fontkit pdfjs-dist jszip papaparse
-npm i -D vite typescript vitest @types/papaparse @types/node
+npm i pdf-lib@^1.17 @pdf-lib/fontkit pdfjs-dist@^6 jszip papaparse
+npm i -D vite@^8 typescript@^7 vitest@^5 @types/papaparse @types/node
 ```
+
+The code in this plan was verified against pdfjs-dist 6.3, vite 8.3, vitest 5.0, typescript 7.0 and pdf-lib 1.17.1. Node ≥ 22.13 is required; this machine has 24.
 
 - [ ] **Step 2: Write `tsconfig.json`**
 
@@ -120,6 +122,7 @@ Expected: both files are non-empty. If the URL 404s, check https://github.com/go
 
 ```bash
 cd /tmp/madefor-dl
+python3 -I -c "import fontTools" 2>/dev/null || python3 -m pip install --user fonttools
 python3 -I -m fontTools.varLib.instancer WixMadeforDisplay.ttf wght=700 -o WixMadeforDisplay-Bold.ttf
 cp WixMadeforDisplay-Bold.ttf OFL.txt /Users/artemb/Projects/pdf-certificates/public/fonts/
 ```
@@ -812,6 +815,7 @@ h1 { margin: 0 0 4px; font-size: 28px; color: var(--blue); }
 .layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
 .preview { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
 #preview-canvas { display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
+[hidden] { display: none !important; }
 .pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; }
 .pager button { min-width: 44px; }
 .input { display: flex; flex-direction: column; gap: 8px; }
@@ -829,16 +833,19 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 - [ ] **Step 3: `src/preview.ts`**
 
+The **legacy** pdf.js build is deliberate. The default build calls very new JS APIs (`Map.prototype.getOrInsertComputed`, `Math.sumPrecise`, `Promise.try`) that throw in Safari and older Chrome.
+
 ```ts
-import * as pdfjs from 'pdfjs-dist';
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
 export class Preview {
   private doc: PDFDocumentProxy | null = null;
   private task: RenderTask | null = null;
+  private seq = 0;
   page = 1;
 
   constructor(private canvas: HTMLCanvasElement) {}
@@ -850,7 +857,7 @@ export class Preview {
   async show(bytes: Uint8Array): Promise<void> {
     const old = this.doc;
     this.doc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
-    void old?.destroy();
+    void old?.loadingTask.destroy();
     this.page = 1;
     await this.render();
   }
@@ -864,8 +871,10 @@ export class Preview {
 
   private async render(): Promise<void> {
     if (!this.doc) return;
-    this.task?.cancel();
+    const seq = ++this.seq;
     const page = await this.doc.getPage(this.page);
+    if (seq !== this.seq) return; // a newer render started while we awaited
+    this.task?.cancel(); // cancel right before reusing the canvas
     const cssWidth = this.canvas.clientWidth || 800;
     const scale = (cssWidth * window.devicePixelRatio) / page.getViewport({ scale: 1 }).width;
     const viewport = page.getViewport({ scale });
@@ -881,7 +890,7 @@ export class Preview {
 }
 ```
 
-Note: if the installed pdfjs-dist major version's `render()` params type rejects `canvas`, drop that key. Older versions take only `canvasContext` and `viewport`. `npm run build` (the `tsc` step) will flag it.
+Note: in pdfjs-dist 6, `canvas` is the required render parameter and `PDFDocumentProxy` has no `destroy()`; use `loadingTask.destroy()`.
 
 - [ ] **Step 4: `src/main.ts`**
 
@@ -966,7 +975,7 @@ generateBtn.addEventListener('click', async () => {
     if (generated) URL.revokeObjectURL(generated.combinedUrl);
     generated = {
       names,
-      combinedUrl: URL.createObjectURL(new Blob([combined], { type: 'application/pdf' })),
+      combinedUrl: URL.createObjectURL(new Blob([combined as Uint8Array<ArrayBuffer>], { type: 'application/pdf' })),
     };
     await preview.show(combined);
     downloadBtn.disabled = false;
@@ -992,7 +1001,7 @@ downloadBtn.addEventListener('click', async () => {
       entries.push({ name: certificateFileName(i, names.length, names[i]), data: await renderCertificates(assets, [names[i]]) });
     }
     const zip = await buildZip(entries);
-    const url = URL.createObjectURL(new Blob([zip], { type: 'application/zip' }));
+    const url = URL.createObjectURL(new Blob([zip as Uint8Array<ArrayBuffer>], { type: 'application/zip' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = 'sertyfikaty.zip';
@@ -1045,7 +1054,7 @@ void init();
 - [ ] **Step 5: Typecheck and build**
 
 Run: `npm run build`
-Expected: no TS errors; `dist/` contains `index.html`, `assets/*.js`, `template.pdf`, `fonts/…`.
+Expected: no TS errors; `dist/` contains `index.html`, `assets/*.js`, `template.pdf`, `fonts/…`. Vite will warn about a large chunk (about 1.7 MB, mostly pdf.js and pdf-lib). That's expected; don't try to "fix" it.
 
 - [ ] **Step 6: Commit**
 
@@ -1129,6 +1138,9 @@ git add tests/sample.test.ts src/layout.ts && git commit -m "chore: calibrate na
 [build]
   command = "npm run build"
   publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
 
 [[headers]]
   for = "/*"
