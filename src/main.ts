@@ -23,6 +23,8 @@ let assets: Assets | null = null;
 let generated: { names: string[]; combinedUrl: string } | null = null;
 // Bumped on every list edit; async handlers capture it and bail if it changed.
 let version = 0;
+// Bumped on every file selection, so only the latest import may fill the list.
+let importSeq = 0;
 
 function setStatus(text: string, isError = false) {
   status.textContent = text;
@@ -59,7 +61,12 @@ fileInput.addEventListener('change', async () => {
   const file = fileInput.files?.[0];
   fileInput.value = '';
   if (!file) return;
-  const names = parseCsvNames(decodeText(new Uint8Array(await file.arrayBuffer())));
+  const myImport = ++importSeq;
+  const myVersion = version;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  // The teacher picked another file or edited the list while this one was loading.
+  if (myImport !== importSeq || myVersion !== version) return;
+  const names = parseCsvNames(decodeText(bytes));
   if (names.length === 0) {
     setStatus('У файлі не знайдено жодного імені.', true);
     return;
