@@ -1,0 +1,32 @@
+:root {
+  --blue: #2e51f4;
+  --ink: #16181d;
+  --muted: #5d6270;
+  --line: #d9dce3;
+  --bg: #f5f6f9;
+  font-family: 'Wix Madefor Text', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 1280px; padding: 24px 32px 120px; }
+h1 { margin: 0 0 4px; font-size: 28px; color: var(--blue); }
+.lead { margin: 0 0 24px; color: var(--muted); }
+.layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
+.preview { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+#preview-canvas { display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
+[hidden] { display: none !important; }
+.pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; }
+.pager button { min-width: 44px; }
+.input { display: flex; flex-direction: column; gap: 8px; }
+.input > label { font-weight: 600; }
+textarea { width: 100%; min-height: 360px; resize: vertical; padding: 12px; font: inherit; line-height: 1.5; border: 1px solid var(--line); border-radius: 8px; }
+.input-row { display: flex; justify-content: space-between; align-items: center; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint a { color: var(--blue); }
+button, .file-button { font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--blue); background: #fff; color: var(--blue); cursor: pointer; }
+button.primary { background: var(--blue); color: #fff; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+.actions { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 12px; align-items: center; justify-content: center; padding: 16px; background: #fff; border-top: 1px solid var(--line); }
+#status { min-width: 240px; color: var(--muted); }
+#status.error { color: #c62828; }
