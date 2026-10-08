@@ -13,8 +13,8 @@ const HEADER_WORDS = ['піб', 'ім’я', 'імя', 'прізвище', 'уч
 
 function isHeader(row: string[]): boolean {
   return row.some((cell) => {
-    const c = cell.toLowerCase();
-    return HEADER_WORDS.some((w) => c === w || c.startsWith(w + ' ') || c.endsWith(' ' + w));
+    const words = cell.toLowerCase().split(/[^\p{L}’]+/u);
+    return words.some((w) => HEADER_WORDS.includes(w));
   });
 }
 

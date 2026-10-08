@@ -1,0 +1,154 @@
+import './styles.css';
+import { parseNames, MAX_NAMES } from './names';
+import { decodeText, parseCsvNames } from './csv';
+import { renderCertificates, type Assets } from './certificate';
+import { certificateFileName } from './filenames';
+import { buildZip } from './zip';
+import { Preview } from './preview';
+
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const textarea = $<HTMLTextAreaElement>('names');
+const fileInput = $<HTMLInputElement>('file');
+const count = $('count');
+const status = $('status');
+const generateBtn = $<HTMLButtonElement>('generate');
+const downloadBtn = $<HTMLButtonElement>('download');
+const printBtn = $<HTMLButtonElement>('print');
+const pager = $('pager');
+const pageLabel = $('page-label');
+const preview = new Preview($<HTMLCanvasElement>('preview-canvas'));
+
+let assets: Assets | null = null;
+let generated: { names: string[]; combinedUrl: string } | null = null;
+
+function setStatus(text: string, isError = false) {
+  status.textContent = text;
+  status.classList.toggle('error', isError);
+}
+
+function updatePager() {
+  pager.hidden = !generated;
+  pageLabel.textContent = `${preview.page} / ${preview.pageCount}`;
+}
+
+function invalidate() {
+  if (!generated) return;
+  URL.revokeObjectURL(generated.combinedUrl);
+  generated = null;
+  downloadBtn.disabled = true;
+  printBtn.disabled = true;
+  updatePager();
+  if (assets) void preview.show(assets.template);
+  setStatus('Список змінено — сформуйте сертифікати ще раз.');
+}
+
+function updateCount() {
+  count.textContent = `Учнів: ${parseNames(textarea.value).length}`;
+}
+
+textarea.addEventListener('input', () => {
+  updateCount();
+  invalidate();
+});
+
+fileInput.addEventListener('change', async () => {
+  const file = fileInput.files?.[0];
+  fileInput.value = '';
+  if (!file) return;
+  const names = parseCsvNames(decodeText(new Uint8Array(await file.arrayBuffer())));
+  if (names.length === 0) {
+    setStatus('У файлі не знайдено жодного імені.', true);
+    return;
+  }
+  textarea.value = names.join('\n');
+  textarea.dispatchEvent(new Event('input'));
+  setStatus(`Завантажено ${names.length} імен з файлу «${file.name}». Перевірте список.`);
+});
+
+generateBtn.addEventListener('click', async () => {
+  if (!assets) return;
+  const names = parseNames(textarea.value);
+  if (names.length === 0) return setStatus('Додайте хоча б одне ім’я.', true);
+  if (names.length > MAX_NAMES) return setStatus(`Забагато імен: максимум ${MAX_NAMES}.`, true);
+
+  generateBtn.disabled = true;
+  setStatus('Формуємо сертифікати…');
+  try {
+    const combined = await renderCertificates(assets, names);
+    if (generated) URL.revokeObjectURL(generated.combinedUrl);
+    generated = {
+      names,
+      combinedUrl: URL.createObjectURL(new Blob([combined as Uint8Array<ArrayBuffer>], { type: 'application/pdf' })),
+    };
+    await preview.show(combined);
+    downloadBtn.disabled = false;
+    printBtn.disabled = false;
+    updatePager();
+    setStatus(`Готово: ${names.length} сертифікатів.`);
+  } catch (e) {
+    console.error(e);
+    setStatus('Не вдалося сформувати сертифікати. Спробуйте ще раз.', true);
+  } finally {
+    generateBtn.disabled = false;
+  }
+});
+
+downloadBtn.addEventListener('click', async () => {
+  if (!generated || !assets) return;
+  const { names } = generated;
+  downloadBtn.disabled = true;
+  try {
+    const entries = [];
+    for (let i = 0; i < names.length; i++) {
+      setStatus(`Готуємо архів… ${i + 1} / ${names.length}`);
+      entries.push({ name: certificateFileName(i, names.length, names[i]), data: await renderCertificates(assets, [names[i]]) });
+    }
+    const zip = await buildZip(entries);
+    const url = URL.createObjectURL(new Blob([zip as Uint8Array<ArrayBuffer>], { type: 'application/zip' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sertyfikaty.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    setStatus('Архів завантажено.');
+  } catch (e) {
+    console.error(e);
+    setStatus('Не вдалося створити архів.', true);
+  } finally {
+    downloadBtn.disabled = !generated;
+  }
+});
+
+printBtn.addEventListener('click', () => {
+  if (!generated) return;
+  const win = window.open(generated.combinedUrl, '_blank');
+  setStatus(win ? 'Файл для друку відкрито в новій вкладці — натисніть «Друк» (Ctrl/Cmd + P).' : 'Браузер заблокував нову вкладку. Дозвольте спливаючі вікна для цього сайту.', !win);
+});
+
+$('prev').addEventListener('click', () => preview.go(-1).then(updatePager));
+$('next').addEventListener('click', () => preview.go(1).then(updatePager));
+
+async function init() {
+  generateBtn.disabled = true;
+  setStatus('Завантаження шаблону…');
+  try {
+    const base = import.meta.env.BASE_URL;
+    const [template, font] = await Promise.all(
+      [`${base}template.pdf`, `${base}fonts/WixMadeforDisplay-Bold.ttf`].map(async (url) => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`${url}: ${res.status}`);
+        return new Uint8Array(await res.arrayBuffer());
+      }),
+    );
+    assets = { template, font };
+    await preview.show(template);
+    generateBtn.disabled = false;
+    setStatus('');
+  } catch (e) {
+    console.error(e);
+    setStatus('Не вдалося завантажити шаблон. Оновіть сторінку.', true);
+  }
+  updateCount();
+}
+
+void init();

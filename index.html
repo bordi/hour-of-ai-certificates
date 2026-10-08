@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Сертифікати «Година ШІ»</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <h1>Сертифікати «Година ШІ»</h1>
+      <p class="lead">Вставте список учнів — по одному імені в рядку — і отримайте іменні сертифікати для всього класу.</p>
+    </header>
+
+    <main class="layout">
+      <section class="preview" aria-label="Попередній перегляд">
+        <canvas id="preview-canvas"></canvas>
+        <nav class="pager" id="pager" hidden>
+          <button type="button" id="prev" aria-label="Попередній">◀</button>
+          <span id="page-label">1 / 1</span>
+          <button type="button" id="next" aria-label="Наступний">▶</button>
+        </nav>
+      </section>
+
+      <section class="input">
+        <label for="names">Список учнів</label>
+        <textarea id="names" spellcheck="false" placeholder="Шевченко Тарас&#10;Українка Леся&#10;Франко Іван"></textarea>
+        <div class="input-row">
+          <label class="file-button">
+            Завантажити CSV / TXT
+            <input type="file" id="file" accept=".csv,.txt,text/csv,text/plain" hidden />
+          </label>
+          <span id="count">Учнів: 0</span>
+        </div>
+        <p class="hint">Імена друкуються саме так, як ви їх ввели. Дані не залишають ваш комп’ютер.</p>
+      </section>
+    </main>
+
+    <footer class="actions">
+      <button type="button" id="generate" class="primary">Сформувати сертифікати</button>
+      <button type="button" id="download" disabled>Завантажити (.zip)</button>
+      <button type="button" id="print" disabled>Друкувати</button>
+      <span id="status" role="status" aria-live="polite"></span>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
