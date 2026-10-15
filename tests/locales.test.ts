@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { LOCALES, getLocale, type Plural } from '../src/locales';
 
@@ -19,6 +20,13 @@ describe('locale registry', () => {
 describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
   it('is registered under its own code', () => {
     expect(locale.code).toBe(key);
+  });
+
+  it('points at assets that exist under public/', () => {
+    for (const url of [locale.templateUrl, locale.fontUrl, locale.exampleCsvUrl]) {
+      expect(url).toMatch(/^\//);
+      expect(existsSync(`public${url}`), url).toBe(true);
+    }
   });
 
   it('has no empty messages', () => {

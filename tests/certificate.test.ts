@@ -2,10 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { PDFDocument } from 'pdf-lib';
 import { renderCertificates, type Assets } from '../src/certificate';
+import { LOCALES } from '../src/locales';
 
 const assets: Assets = {
-  template: new Uint8Array(readFileSync('public/template.pdf')),
-  font: new Uint8Array(readFileSync('public/fonts/WixMadeforDisplay-Bold.ttf')),
+  template: new Uint8Array(readFileSync(`public${LOCALES.uk.templateUrl}`)),
+  font: new Uint8Array(readFileSync(`public${LOCALES.uk.fontUrl}`)),
 };
 
 async function pageTexts(bytes: Uint8Array): Promise<string[]> {

@@ -5,7 +5,7 @@ import { renderCertificates, type Assets } from './certificate';
 import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
-import { applyToDocument, t } from './i18n';
+import { activeLocale, applyToDocument, t } from './i18n';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -162,9 +162,9 @@ async function init() {
   generateBtn.disabled = true;
   setStatus(t('loadingTemplate'));
   try {
-    const base = import.meta.env.BASE_URL;
+    const { templateUrl, fontUrl } = activeLocale();
     const [template, font] = await Promise.all(
-      [`${base}template.pdf`, `${base}fonts/WixMadeforDisplay-Bold.ttf`].map(async (url) => {
+      [templateUrl, fontUrl].map(async (url) => {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`${url}: ${res.status}`);
         return new Uint8Array(await res.arrayBuffer());

@@ -4,6 +4,9 @@ export const uk: Locale = {
   code: 'uk',
   dir: 'ltr',
   status: 'ready',
+  templateUrl: '/locales/uk/template.pdf',
+  fontUrl: '/fonts/WixMadeforDisplay-Bold.ttf',
+  exampleCsvUrl: '/locales/uk/example.csv',
   messages: {
     title: 'Сертифікати «Година ШІ»',
     heading: 'Сертифікати «Година ШІ»',

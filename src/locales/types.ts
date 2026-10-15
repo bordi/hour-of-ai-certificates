@@ -50,4 +50,8 @@ export interface Locale {
   dir: Direction;
   status: LocaleStatus;
   messages: Messages;
+  /** Absolute URLs under `public/`; the page lives at `/<code>/`, so relative paths would break. */
+  templateUrl: string;
+  fontUrl: string;
+  exampleCsvUrl: string;
 }

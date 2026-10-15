@@ -18,6 +18,8 @@ export function setLocale(locale: Locale): void {
   active = locale;
 }
 
+export const activeLocale = (): Locale => active;
+
 export const t = (key: MessageKey, vars?: Vars): string => translate(active, key, vars);
 
 /** Sets <html lang dir>, the page title, and fills every `data-i18n*` element. */
@@ -33,5 +35,8 @@ export function applyToDocument(doc: Document = document): void {
   });
   doc.querySelectorAll<HTMLElement>('[data-i18n-aria-label]').forEach((el) => {
     el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel as MessageKey));
+  });
+  doc.querySelectorAll<HTMLElement>('[data-example-csv]').forEach((el) => {
+    el.setAttribute('href', active.exampleCsvUrl);
   });
 }
