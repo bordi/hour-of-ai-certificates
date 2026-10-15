@@ -11,8 +11,12 @@ export function translate(locale: Locale, key: MessageKey, vars: Vars = {}): str
   return template.replace(/\{(\w+)\}/g, (placeholder, name: string) => (name in vars ? String(vars[name]) : placeholder));
 }
 
-// Fixed for now; the language comes from the URL once routing lands.
-const active: Locale = LOCALES.uk;
+// Set once at startup from the URL (see router.ts) before anything is rendered.
+let active: Locale = LOCALES.uk;
+
+export function setLocale(locale: Locale): void {
+  active = locale;
+}
 
 export const t = (key: MessageKey, vars?: Vars): string => translate(active, key, vars);
 
