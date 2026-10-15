@@ -5,7 +5,7 @@ import { renderCertificates, type Assets } from './certificate';
 import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
-import { pluralUk } from './plural';
+import { applyToDocument, t } from './i18n';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -45,11 +45,11 @@ function invalidate() {
   printBtn.disabled = true;
   updatePager();
   if (assets) void preview.show(assets.template);
-  setStatus('Список змінено — сформуйте сертифікати ще раз.');
+  setStatus(t('listChanged'));
 }
 
 function updateCount() {
-  count.textContent = `Учнів: ${parseNames(textarea.value).length}`;
+  count.textContent = t('studentCount', { count: parseNames(textarea.value).length });
 }
 
 textarea.addEventListener('input', () => {
@@ -68,24 +68,24 @@ fileInput.addEventListener('change', async () => {
   if (myImport !== importSeq || myVersion !== version) return;
   const names = parseCsvNames(decodeText(bytes));
   if (names.length === 0) {
-    setStatus('У файлі не знайдено жодного імені.', true);
+    setStatus(t('noNamesInFile'), true);
     return;
   }
   textarea.value = names.join('\n');
   textarea.dispatchEvent(new Event('input'));
-  setStatus(`Завантажено ${names.length} ${pluralUk(names.length, 'ім’я', 'імені', 'імен')} з файлу «${file.name}». Перевірте список.`);
+  setStatus(t('importedFromFile', { count: names.length, file: file.name }));
 });
 
 generateBtn.addEventListener('click', async () => {
   if (!assets) return;
   const names = parseNames(textarea.value);
-  if (names.length === 0) return setStatus('Додайте хоча б одне ім’я.', true);
-  if (names.length > MAX_NAMES) return setStatus(`Забагато імен: максимум ${MAX_NAMES}.`, true);
+  if (names.length === 0) return setStatus(t('addAtLeastOneName'), true);
+  if (names.length > MAX_NAMES) return setStatus(t('tooManyNames', { max: MAX_NAMES }), true);
 
   const myVersion = version;
   const stale = () => myVersion !== version;
   generateBtn.disabled = true;
-  setStatus('Формуємо сертифікати…');
+  setStatus(t('generating'));
   let url: string | null = null;
   try {
     const combined = await renderCertificates(assets, names);
@@ -105,11 +105,11 @@ generateBtn.addEventListener('click', async () => {
     downloadBtn.disabled = false;
     printBtn.disabled = false;
     updatePager();
-    setStatus(`Готово: ${names.length} ${pluralUk(names.length, 'сертифікат', 'сертифікати', 'сертифікатів')}.`);
+    setStatus(t('generated', { count: names.length }));
   } catch (e) {
     if (url) URL.revokeObjectURL(url);
     console.error(e);
-    if (!stale()) setStatus('Не вдалося сформувати сертифікати. Спробуйте ще раз.', true);
+    if (!stale()) setStatus(t('generateFailed'), true);
   } finally {
     generateBtn.disabled = false;
   }
@@ -126,7 +126,7 @@ downloadBtn.addEventListener('click', async () => {
     const entries = [];
     for (let i = 0; i < names.length; i++) {
       if (stale()) return;
-      setStatus(`Готуємо архів… ${i + 1} / ${names.length}`);
+      setStatus(t('preparingArchive', { current: i + 1, total: names.length }));
       const data = await renderCertificates(assets, [names[i]]);
       if (stale()) return;
       entries.push({ name: certificateFileName(i, names.length, names[i]), data });
@@ -139,10 +139,10 @@ downloadBtn.addEventListener('click', async () => {
     a.download = 'sertyfikaty.zip';
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    setStatus('Архів завантажено.');
+    setStatus(t('archiveDownloaded'));
   } catch (e) {
     console.error(e);
-    if (!stale()) setStatus('Не вдалося створити архів.', true);
+    if (!stale()) setStatus(t('archiveFailed'), true);
   } finally {
     downloadBtn.disabled = !generated;
   }
@@ -151,15 +151,16 @@ downloadBtn.addEventListener('click', async () => {
 printBtn.addEventListener('click', () => {
   if (!generated) return;
   const win = window.open(generated.combinedUrl, '_blank');
-  setStatus(win ? 'Файл для друку відкрито в новій вкладці — натисніть «Друк» (Ctrl/Cmd + P).' : 'Браузер заблокував нову вкладку. Дозвольте спливаючі вікна для цього сайту.', !win);
+  setStatus(t(win ? 'printOpened' : 'popupBlocked'), !win);
 });
 
 $('prev').addEventListener('click', () => preview.go(-1).then(updatePager));
 $('next').addEventListener('click', () => preview.go(1).then(updatePager));
 
 async function init() {
+  applyToDocument();
   generateBtn.disabled = true;
-  setStatus('Завантаження шаблону…');
+  setStatus(t('loadingTemplate'));
   try {
     const base = import.meta.env.BASE_URL;
     const [template, font] = await Promise.all(
@@ -175,7 +176,7 @@ async function init() {
     setStatus('');
   } catch (e) {
     console.error(e);
-    setStatus('Не вдалося завантажити шаблон. Оновіть сторінку.', true);
+    setStatus(t('templateLoadFailed'), true);
   }
   updateCount();
 }
