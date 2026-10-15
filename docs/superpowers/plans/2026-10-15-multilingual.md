@@ -50,8 +50,10 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 **Files:** Modify `index.html`, `src/main.ts`; create `src/i18n.ts`.
 
-- [ ] `data-i18n` attributes in `index.html`; `applyToDocument()` sets text, placeholder, `<title>`, `<html lang dir>`.
-- [ ] `main.ts` calls `t()` instead of literals.
+- [x] `data-i18n`, `data-i18n-placeholder`, `data-i18n-aria-label` attributes in `index.html`; `applyToDocument()` sets text, placeholder, aria-label, `<title>`, `<html lang dir>`. The static `<title>` stays as a pre-JS fallback.
+- [x] `main.ts` calls `t()` instead of literals; plural form chosen by `Intl.PluralRules` inside `translate()` (`plural.ts` is removed in Task 4).
+- [x] Tests: `translate()` (placeholders, uk plural forms, fallback) and a check that every `data-i18n*` key in `index.html` exists in every locale.
+- The active locale is fixed to `uk` until Task 5.
 - [ ] Commit: `feat: localize static markup and runtime messages`
 
 ### Task 4: Plurals via Intl.PluralRules
