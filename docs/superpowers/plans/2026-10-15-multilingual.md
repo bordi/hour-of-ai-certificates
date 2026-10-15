@@ -66,11 +66,12 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 ### Task 5: Language detection and routing
 
-**Files:** Create `src/detect-locale.ts`, `tests/detect-locale.test.ts`; modify `src/main.ts`.
+**Files:** Create `src/detect-locale.ts`, `src/router.ts`, `tests/detect-locale.test.ts`, `tests/router.test.ts`; rename `src/main.ts` → `src/app.ts` and add a small new `src/main.ts`; modify `src/i18n.ts`.
 
-- [ ] Implement spec rules: path segment → `navigator.languages` in order (`ru`→`uk`, `iw`→`he`) → `en`.
-- [ ] Tests: `/uk/`, `/he` (no slash), unknown `/fr/`, `['ru-RU','en']`→`uk`, `['de','he-IL']`→`he`, `['de']`→`en`, `[]`→`en`.
-- [ ] Redirect via `location.replace`. The set of supported locales comes from the registry and respects draft gating (Task 9); tests cover both the production set (`uk` only) and the dev set.
+- [x] Implement spec rules: path segment → `navigator.languages` in order (`ru`→`uk`, `iw`→`he`) → `en`. While `en` is not registered (until Task 11) the fallback is the first supported locale.
+- [x] Tests: `/uk/`, `/he` (no slash), `/HE/`, unknown `/fr/`, `['ru-RU','en']`→`uk`, `['de','he-IL']`→`he`, `['de']`→`en`, `[]`→`en`, alias whose target is unsupported, inherited keys (`constructor`).
+- [x] `main.ts` is now the entry point: `route()` makes the URL canonical (`/<code>/`, keeps query and hash) via `location.replace` and activates the locale; only then `app.ts` (the former `main.ts`) is imported, so nothing runs on a redirecting page. `i18n.ts` gets `setLocale()`.
+- Not deployable on its own: `/uk/` returns 404 on Netlify until the rewrites of Task 6 are in. Merge Tasks 5 and 6 together. The set of supported locales comes from the registry and respects draft gating (Task 9); tests cover both the production set (`uk` only) and the dev set.
 - [ ] Commit: `feat: detect language from url and browser preferences`
 
 ### Task 6: Per-locale assets and Netlify rewrites
