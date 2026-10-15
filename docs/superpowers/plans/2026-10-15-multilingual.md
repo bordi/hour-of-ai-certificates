@@ -58,9 +58,10 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 ### Task 4: Plurals via Intl.PluralRules
 
-**Files:** Delete `src/plural.ts`, update `tests/plural.test.ts`.
+**Files:** Delete `src/plural.ts` and `tests/plural.test.ts`; extend `tests/i18n.test.ts`.
 
-- [ ] Replace `pluralUk` by a helper over `Intl.PluralRules(code)`; keep the Ukrainian cases (1, 2–4, 5, 11, 21, 22) as tests; add `en` and `he` cases.
+- [x] `translate()` (Task 3) already selects forms with `Intl.PluralRules(code)`, so `pluralUk` is simply removed. Its cases (1, 2, 4, 5, 11, 12, 14, 21, 22, 25, 101, 111) moved into `i18n.test.ts`.
+- [x] `en` (`one`/`other`) and `he` (`one`/`two`/`other`) are tested with stand-in locales, because those locales do not exist yet (Task 11).
 - [ ] Commit: `refactor: use Intl.PluralRules instead of pluralUk`
 
 ### Task 5: Language detection and routing
