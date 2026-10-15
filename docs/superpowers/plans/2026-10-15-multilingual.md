@@ -16,7 +16,8 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 | File | Responsibility |
 |---|---|
-| `src/locales/index.ts` | Registry, `Locale` / `Messages` types, lookup |
+| `src/locales/types.ts` | `Locale` / `Messages` / `Plural` types |
+| `src/locales/index.ts` | Registry and lookup |
 | `src/locales/uk.ts`, `en.ts`, `he.ts` | Messages and per-locale config |
 | `src/detect-locale.ts` | `detectLocale(pathname, languages)` |
 | `src/i18n.ts` | `t()`, document `lang`/`dir`, `data-i18n` binding |
@@ -38,11 +39,11 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 ### Task 2: Locale registry with Ukrainian messages
 
-**Files:** Create `src/locales/index.ts`, `src/locales/uk.ts`.
+**Files:** Create `src/locales/types.ts`, `src/locales/uk.ts`, `src/locales/index.ts`, `tests/locales.test.ts`.
 
-- [ ] Define `Messages`, `Locale` (`code`, `dir`, `status`, asset URLs, `nameBox`, csv config, name policy, filename strategy).
-- [ ] Move every UI string from `index.html` and `src/main.ts` into `uk.ts`; count-dependent strings take a plural category.
-- [ ] Test: registry returns `uk`; every locale satisfies `Messages` (compile-time) and has no empty values.
+- [x] Define `Messages` and `Locale` (`code`, `dir`, `status`, `messages`). Fields for assets, `nameBox`, csv config, name policy and filename strategy are added by the Tasks that use them (6–8), so no unused code lands early.
+- [x] Copy every UI string from `index.html` and `src/main.ts` into `uk.ts`; count-dependent strings are `Plural` entries with `{count}` placeholders. Nothing reads the module yet; Task 3 wires it in.
+- [x] Test: registry returns `uk` and rejects unknown/inherited keys; every locale is registered under its own code, has no empty values, and uses the same placeholders in all plural forms. `Messages` completeness is enforced at compile time.
 - [ ] Commit: `refactor: move ukrainian ui strings into a locale module`
 
 ### Task 3: Localize markup and runtime messages
