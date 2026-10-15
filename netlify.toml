@@ -5,6 +5,18 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# One page serves every language: /<code>/ is rewritten to index.html and the page reads the code.
+# Add a pair of rules for each language that goes live.
+[[redirects]]
+  from = "/uk"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/uk/*"
+  to = "/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
