@@ -71,18 +71,18 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 - [x] Implement spec rules: path segment → `navigator.languages` in order (`ru`→`uk`, `iw`→`he`) → `en`. While `en` is not registered (until Task 11) the fallback is the first supported locale.
 - [x] Tests: `/uk/`, `/he` (no slash), `/HE/`, unknown `/fr/`, `['ru-RU','en']`→`uk`, `['de','he-IL']`→`he`, `['de']`→`en`, `[]`→`en`, alias whose target is unsupported, inherited keys (`constructor`).
 - [x] `main.ts` is now the entry point: `route()` makes the URL canonical (`/<code>/`, keeps query and hash) via `location.replace` and activates the locale; only then `app.ts` (the former `main.ts`) is imported, so nothing runs on a redirecting page. `i18n.ts` gets `setLocale()`.
-- Not deployable on its own: `/uk/` returns 404 on Netlify until the rewrites of Task 6 are in. Merge Tasks 5 and 6 together. The set of supported locales comes from the registry and respects draft gating (Task 9); tests cover both the production set (`uk` only) and the dev set.
-- [ ] Commit: `feat: detect language from url and browser preferences`
+- Not deployable on its own: `/uk/` returns 404 on Netlify until the rewrites of Task 6 are in. Merge Tasks 5 and 6 together.
+- The supported set is every registered locale for now; Task 9 restricts it to `ready` locales in production and adds the tests for both sets.
 
 ### Task 6: Per-locale assets and Netlify rewrites
 
-**Files:** Move `public/template.pdf` → `public/locales/uk/template.pdf`; move example CSV; modify `src/main.ts`, `netlify.toml`, `tests/example-csv.test.ts`.
+**Files:** Move `public/template.pdf` → `public/locales/uk/template.pdf` and `public/examples/spysok-uchniv.csv` → `public/locales/uk/example.csv`; modify `src/locales/types.ts`, `src/locales/uk.ts`, `src/i18n.ts`, `src/app.ts`, `index.html`, `netlify.toml`, `tests/example-csv.test.ts`, `tests/certificate.test.ts`, `tests/locales.test.ts`.
 
-- [ ] Asset URLs come from the locale (absolute `/locales/...`).
-- [ ] `netlify.toml`: `[[redirects]]` `/uk/*`, `/en/*`, `/he/*` → `/index.html` status 200.
-- [ ] Verify with `npm run build && npm run preview` on `/uk/`.
-- [ ] Commit: `chore: move template and example csv under locales/uk`
-- [ ] Commit: `build: netlify rewrites for language routes`
+- [x] `Locale` gets `templateUrl`, `fontUrl`, `exampleCsvUrl` (absolute `/locales/...` and `/fonts/...`); `app.ts` loads assets from the active locale and the example link is set from `exampleCsvUrl` (`data-example-csv`). `BASE_URL` is no longer used.
+- [x] Tests read assets through the locale; a registry test checks that every referenced file exists under `public/`.
+- [x] `netlify.toml`: rewrites `/uk` and `/uk/*` → `/index.html` (200). Rules for `/en` and `/he` are added in Task 11, together with those locales.
+- [x] Verified with `npm run build` + `vite preview`: `/`, `/uk/`, `/uk` serve the page; template, font and example CSV are served from their new paths. Netlify's own rewrite handling is verified on the deploy preview.
+- [x] Commits: `chore: move template and example csv under locales/uk`, `build: netlify rewrites for language routes`
 
 ### Task 7: Per-locale import, normalisation and file names
 
