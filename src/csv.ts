@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import type { NamePolicy } from './locales';
 import { normalizeName } from './names';
 
 export function decodeText(bytes: Uint8Array, fallbackEncoding: string): string {
@@ -17,13 +18,13 @@ function isHeader(row: string[], headerWords: readonly string[]): boolean {
   });
 }
 
-export function parseCsvNames(text: string, headerWords: readonly string[]): string[] {
+export function parseCsvNames(text: string, headerWords: readonly string[], policy: NamePolicy): string[] {
   const { data } = Papa.parse<string[]>(text.trim(), {
     skipEmptyLines: 'greedy',
     delimitersToGuess: [',', ';', '\t'],
   });
   const rows = data
-    .map((row) => row.map(normalizeName).filter(Boolean))
+    .map((row) => row.map((cell) => normalizeName(cell, policy)).filter(Boolean))
     .filter((row) => row.length > 0);
   if (rows.length > 0 && isHeader(rows[0], headerWords)) rows.shift();
   return rows.map((row) => row.join(' '));

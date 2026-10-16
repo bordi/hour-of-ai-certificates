@@ -3,7 +3,8 @@ import { decodeText, parseCsvNames } from '../src/csv';
 import { LOCALES } from '../src/locales';
 
 const UK = LOCALES.uk.csv;
-const parseUk = (text: string) => parseCsvNames(text, UK.headerWords);
+const parseUk = (text: string) => parseCsvNames(text, UK.headerWords, LOCALES.uk.name);
+const HE_NAME = { apostrophes: 'ʼ' };
 
 const cp1251 = (s: string) => {
   // minimal encoder for the test: Cyrillic А..я = 0xC0..0xFF, plus і/І/ї/Ї/є/Є/ґ/Ґ
@@ -74,14 +75,19 @@ describe('parseCsvNames header words come from the caller', () => {
   const he = ['שם', 'תלמיד'];
 
   it('skips a header made of the given words', () => {
-    expect(parseCsvNames('שם;משפחה\nדוד;כהן', he)).toEqual(['דוד כהן']);
+    expect(parseCsvNames('שם;משפחה\nדוד;כהן', he, HE_NAME)).toEqual(['דוד כהן']);
   });
 
   it('recognises a header word with niqqud and inside a longer label', () => {
-    expect(parseCsvNames('שֵׁם התלמיד\nדוד כהן', ['שֵׁם'])).toEqual(['דוד כהן']);
+    expect(parseCsvNames('שֵׁם התלמיד\nדוד כהן', ['שֵׁם'], HE_NAME)).toEqual(['דוד כהן']);
   });
 
   it('does not use another locale’s words', () => {
-    expect(parseCsvNames('Прізвище;Ім’я\nШевченко;Тарас', he)).toEqual(['Прізвище Ім’я', 'Шевченко Тарас']);
+    expect(parseCsvNames('Прізвище;Ім’я\nШевченко;Тарас', he, HE_NAME)).toEqual(['Прізвище Ім’я', 'Шевченко Тарас']);
+  });
+
+  it('applies the given name policy to every cell', () => {
+    expect(parseCsvNames("O'Brien;Seán\nMar'yana;José", [], HE_NAME)).toEqual(["O'Brien Seán", "Mar'yana José"]);
+    expect(parseUk("Мар'яна;Іван")).toEqual(['Мар’яна Іван']);
   });
 });

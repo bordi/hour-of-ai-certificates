@@ -52,6 +52,14 @@ export interface CsvRules {
   fallbackEncoding: string;
 }
 
+export interface NamePolicy {
+  /**
+   * Characters rewritten to the typographic apostrophe ’. A name is printed as entered, so this lists only
+   * what the font cannot draw (ʼ), or, for uk, the apostrophe variants that were always unified.
+   */
+  apostrophes: string;
+}
+
 export interface Locale {
   code: string;
   dir: Direction;
@@ -62,4 +70,5 @@ export interface Locale {
   fontUrl: string;
   exampleCsvUrl: string;
   csv: CsvRules;
+  name: NamePolicy;
 }

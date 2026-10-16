@@ -11,6 +11,7 @@ export const uk: Locale = {
     headerWords: ['піб', 'ім’я', 'імя', 'прізвище', 'учень', 'учні', 'клас', 'name', 'surname', 'student'],
     fallbackEncoding: 'windows-1251',
   },
+  name: { apostrophes: "'ʼ`" },
   messages: {
     title: 'Сертифікати «Година ШІ»',
     heading: 'Сертифікати «Година ШІ»',

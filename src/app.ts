@@ -49,7 +49,7 @@ function invalidate() {
 }
 
 function updateCount() {
-  count.textContent = t('studentCount', { count: parseNames(textarea.value).length });
+  count.textContent = t('studentCount', { count: parseNames(textarea.value, activeLocale().name).length });
 }
 
 textarea.addEventListener('input', () => {
@@ -67,7 +67,7 @@ fileInput.addEventListener('change', async () => {
   // The teacher picked another file or edited the list while this one was loading.
   if (myImport !== importSeq || myVersion !== version) return;
   const { csv } = activeLocale();
-  const names = parseCsvNames(decodeText(bytes, csv.fallbackEncoding), csv.headerWords);
+  const names = parseCsvNames(decodeText(bytes, csv.fallbackEncoding), csv.headerWords, activeLocale().name);
   if (names.length === 0) {
     setStatus(t('noNamesInFile'), true);
     return;
@@ -79,7 +79,7 @@ fileInput.addEventListener('change', async () => {
 
 generateBtn.addEventListener('click', async () => {
   if (!assets) return;
-  const names = parseNames(textarea.value);
+  const names = parseNames(textarea.value, activeLocale().name);
   if (names.length === 0) return setStatus(t('addAtLeastOneName'), true);
   if (names.length > MAX_NAMES) return setStatus(t('tooManyNames', { max: MAX_NAMES }), true);
 
