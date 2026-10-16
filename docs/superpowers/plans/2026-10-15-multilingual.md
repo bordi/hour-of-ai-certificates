@@ -111,14 +111,14 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 There is no language switcher: the language is chosen only by the code in the URL.
 
-**Files:** Modify `src/locales/index.ts`, `netlify.toml`, `vite-env.d.ts` (if needed), tests.
+**Files:** Modify `src/locales/index.ts`, `src/router.ts`, `netlify.toml`; tests `locales`, `router`, new `netlify-config`.
 
-- [ ] `VITE_ENABLE_DRAFT_LOCALES`: `npm run dev` on; registry exposes only `ready` locales when it is off.
-- [ ] `netlify.toml`: `[context.production.environment]` `false`; `[context.deploy-preview.environment]` and `[context.branch-deploy.environment]` `true`.
-- [ ] Tests: production set is `uk` only; `/en/` in production falls through to detection; with the flag on, `/en/` and `/he/` resolve.
-- [ ] Verify on Netlify (Deploy Previews are enabled): preview serves `/en/` and `/he/`, production serves only `/uk/`.
-- [ ] Pull request description lists the known limits: draft locales use the Ukrainian certificate text; Hebrew names cannot be drawn with the current font; Hebrew/English wording not yet reviewed.
-- [ ] Commit: `feat: gate draft locales to dev and deploy previews`
+- [x] `supportedLocales()` = registered locales filtered by `filterLocales(locales, includeDrafts)`. Drafts are included when `import.meta.env.DEV` (`npm run dev`) or `VITE_ENABLE_DRAFT_LOCALES === 'true'`; a local `vite build` + `vite preview` behaves like production. `route()` takes the locale list as a parameter, so tests can use stand-in drafts.
+- [x] `netlify.toml`: `[context.production.environment]` `false`; `[context.deploy-preview.environment]` and `[context.branch-deploy.environment]` `true`.
+- [x] Tests: production set is ready-only and `uk` is ready; `/en/` in production falls through to detection; with drafts `/en/` is served and English is the fallback for unknown codes; `netlify.toml` has the three contexts and the catch-all rewrite.
+- [ ] Verify on Netlify once Task 11 adds `en` and `he` (until then there is no draft locale to show): the preview serves `/en/` and `/he/`, production redirects both to a ready locale. Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
+- [ ] Pull request description lists the known limits: draft locales use the Ukrainian certificate text; Hebrew names cannot be drawn with the current font; Hebrew/English wording not yet reviewed. (Written when `en`/`he` land.)
+- [x] Commit: `feat: gate draft locales to dev and deploy previews`
 
 ### Task 10: Hebrew rendering in PDF
 
