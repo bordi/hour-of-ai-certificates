@@ -1,7 +1,7 @@
 import { uk } from './uk';
 import type { Locale } from './types';
 
-export type { Direction, Locale, LocaleStatus, Messages, Plural } from './types';
+export type { CsvRules, Direction, Locale, LocaleStatus, Messages, Plural } from './types';
 
 export const LOCALES = { uk } satisfies Record<string, Locale>;
 

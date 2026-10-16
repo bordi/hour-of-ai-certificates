@@ -29,6 +29,12 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
     }
   });
 
+  it('has usable csv rules', () => {
+    expect(locale.csv.headerWords.length).toBeGreaterThan(0);
+    for (const word of locale.csv.headerWords) expect(word, word).toBe(word.toLowerCase());
+    expect(() => new TextDecoder(locale.csv.fallbackEncoding)).not.toThrow();
+  });
+
   it('has no empty messages', () => {
     for (const [name, value] of Object.entries(locale.messages)) {
       for (const form of forms(value)) expect(form.trim(), name).not.toBe('');

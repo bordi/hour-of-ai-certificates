@@ -9,7 +9,7 @@ const EXPECTED: Record<string, string[]> = {
 
 describe.each(Object.entries(LOCALES))('example csv of locale %s', (code, locale) => {
   it('parses to the expected names (header skipped, columns joined)', () => {
-    const text = decodeText(new Uint8Array(readFileSync(`public${locale.exampleCsvUrl}`)));
-    expect(parseCsvNames(text)).toEqual(EXPECTED[code]);
+    const text = decodeText(new Uint8Array(readFileSync(`public${locale.exampleCsvUrl}`)), locale.csv.fallbackEncoding);
+    expect(parseCsvNames(text, locale.csv.headerWords)).toEqual(EXPECTED[code]);
   });
 });

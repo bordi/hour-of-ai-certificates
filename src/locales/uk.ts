@@ -7,6 +7,10 @@ export const uk: Locale = {
   templateUrl: '/locales/uk/template.pdf',
   fontUrl: '/fonts/WixMadeforDisplay-Bold.ttf',
   exampleCsvUrl: '/locales/uk/example.csv',
+  csv: {
+    headerWords: ['піб', 'ім’я', 'імя', 'прізвище', 'учень', 'учні', 'клас', 'name', 'surname', 'student'],
+    fallbackEncoding: 'windows-1251',
+  },
   messages: {
     title: 'Сертифікати «Година ШІ»',
     heading: 'Сертифікати «Година ШІ»',

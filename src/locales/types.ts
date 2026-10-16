@@ -45,6 +45,13 @@ export interface Messages {
   popupBlocked: string;
 }
 
+export interface CsvRules {
+  /** A first row is a header if any of its cells contains one of these words (lower case). */
+  headerWords: readonly string[];
+  /** Legacy encoding to try when a file is not valid UTF-8: what Excel writes for this language. */
+  fallbackEncoding: string;
+}
+
 export interface Locale {
   code: string;
   dir: Direction;
@@ -54,4 +61,5 @@ export interface Locale {
   templateUrl: string;
   fontUrl: string;
   exampleCsvUrl: string;
+  csv: CsvRules;
 }

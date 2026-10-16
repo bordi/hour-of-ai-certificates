@@ -66,7 +66,8 @@ fileInput.addEventListener('change', async () => {
   const bytes = new Uint8Array(await file.arrayBuffer());
   // The teacher picked another file or edited the list while this one was loading.
   if (myImport !== importSeq || myVersion !== version) return;
-  const names = parseCsvNames(decodeText(bytes));
+  const { csv } = activeLocale();
+  const names = parseCsvNames(decodeText(bytes, csv.fallbackEncoding), csv.headerWords);
   if (names.length === 0) {
     setStatus(t('noNamesInFile'), true);
     return;
