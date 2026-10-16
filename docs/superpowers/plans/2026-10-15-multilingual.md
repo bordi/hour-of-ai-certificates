@@ -141,7 +141,7 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] Messages translated into English and Hebrew (every key; plural forms `one`/`other` for English and `one`/`two`/`other` for Hebrew, a test checks that each language defines all the forms it needs). The wording is a first draft: **a native speaker must review the Hebrew and the English before `ready`** (Task 13). The Hebrew name of the initiative, "שעה של בינה מלאכותית", is my best guess and also needs checking.
 - [x] `template.pdf` for `en` and `he` is a copy of the current template; same `nameBox`. Font is the current Wix Madefor Display Bold for every locale (it has no Hebrew; see spec).
 - [x] `csv`: `en` uses `windows-1252` and English header words; `he` uses `windows-1255` and Hebrew header words (also the Latin ones). `name.apostrophes` is `ʼ` only for both, so `O'Brien` and `ג'ורג'` stay as typed; `fileNameStrategy` is `keep`.
-- [x] Example CSVs use names the current font can draw (Latin with diacritics for `en`; Latin names under a Hebrew header for `he`). They are replaced by Hebrew names in Task 13, once a Hebrew font exists.
+- [x] Example CSVs: Latin names with diacritics for `en`; Hebrew names under a Hebrew header for `he`. The check for unsupported characters only looks at the names in the list when certificates are created, not at the example file, so with the current font (no Hebrew) uploading the Hebrew example and creating certificates shows the skip dialog until a Hebrew font is chosen (Task 13). `he` is a draft, so only previews show this.
 - [x] Both are `draft`: reachable in dev and on deploy previews, not in production. Tests: every plural form present, registry order and directions, only `uk` ready, example CSVs parse.
 - [ ] To verify on the deploy preview (this also closes the check left open in Task 9): `/en/` and `/he/` open (Hebrew mirrored, certificate text is still Ukrainian); an unknown code (`/fr/`) goes to `/en/` for a non-Ukrainian browser; the example CSV of each language loads and generates; on the production site (`main`) `/en/` and `/he/` still end on `/uk/`.
 - [x] Commits: `feat: add english locale (draft)`, `feat: add hebrew locale (draft)`
@@ -160,7 +160,7 @@ Blocked until the final designs exist for `uk` (redesign), `en` and `he`, and un
 - [ ] Put the final PDFs at `public/locales/<lang>/template.pdf` for each locale, replacing the temporary copies; move the old template to `assets/` as an archive (`template-2025.pdf` already lives there).
 - [ ] Choose the font(s) with the designers; for `he` it must contain Hebrew, Latin, `׳`, `״` and niqqud. Add font files and licences under `public/fonts/`; point each locale's `fontUrl` at it.
 - [ ] Measure and set `nameBox` per locale (`uk` included, since its design changes), as in v1: measure on the template, then compare against rendered output.
-- [ ] Add a Hebrew example CSV and rendering tests with real Hebrew glyphs.
+- [ ] Rendering tests with real Hebrew glyphs (the Hebrew example CSV already exists).
 - [ ] Check output on long names, two-line names, Hebrew with niqqud, mixed scripts.
 - [ ] **Zip check on Windows and macOS** (Hebrew and Ukrainian names): names correct in Explorer/Finder/Archive Utility.
 - [ ] Native-speaker review of UI strings.
