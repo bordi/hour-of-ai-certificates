@@ -97,11 +97,15 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 ### Task 8: RTL-ready UI
 
-**Files:** Modify `src/styles.css`, `index.html`, `src/main.ts`.
+**Files:** Modify `src/styles.css`, `index.html`, `src/i18n.ts`, `src/app.ts`, tests.
 
-- [ ] Logical CSS properties; textarea `dir="auto"`; logical pager arrows; `<bdi>` around file names and user data in messages.
-- [ ] Verify in dev with `dir="rtl"` forced on `uk` text (visual check; no Hebrew content needed yet).
-- [ ] Commit: `feat: rtl-ready layout with logical css properties`
+- [x] CSS: the grid, flex rows and `text-align` already follow `dir`, so only physical names needed changing (`.actions`: `inset-inline` / `inset-block-end`). Pager arrows sit in `<span class="arrow" aria-hidden="true">` and are mirrored with `scaleX(-1)` under `:root[dir='rtl']`.
+- [x] `<textarea dir="auto">`, so lines in Hebrew and Latin align naturally.
+- [x] Found by forcing `dir=rtl` on the Ukrainian page: the name on the preview canvas had overlapping letters, because pdf.js `fillText` follows the canvas's CSS direction. Fixed with `direction: ltr` on `#preview-canvas` (test in `tests/styles.test.ts`). The page counter is `dir="ltr"` too, otherwise "2 / 4" shows as "4 / 2".
+- [x] `isolate()` (FSI…PDI) around the imported file name in the status message.
+- [x] Tests: `isolate`, and `index.html` has `dir="auto"` on the names list and two aria-hidden arrows.
+- To check by eye: `npm run dev`, then in the browser console `document.documentElement.dir = 'rtl'`: the page mirrors (preview to the right, pager and buttons reversed, arrows pointing the right way, and the name on the certificate still drawn correctly). Ukrainian text on a forced-rtl page shows displaced quotes and full stops; that is the bidi algorithm on left-to-right text and disappears with real Hebrew text.
+- [x] Commits: `feat: rtl-ready layout with logical css properties`, `feat: isolate user data in status messages`
 
 ### Task 9: Draft locale gating
 

@@ -129,9 +129,13 @@ The PDF side and the UI side are separate problems.
 **UI**
 - `<html lang="he" dir="rtl">`; layout moves to logical CSS properties (`margin-inline`, `text-align: start`, `inset-inline`).
   The grid mirrors automatically.
-- The preview canvas always shows the PDF as-is (the template's own direction); only its surroundings mirror.
-- Pager: "previous/next" arrows swap direction in RTL (use logical meaning, not fixed `◀ ▶`).
-- Dynamic text containing user data (file name in status messages, names) is wrapped in `<bdi>` so Latin/Hebrew runs do not scramble.
+- The preview canvas always shows the PDF as-is: it is forced to `direction: ltr`. pdf.js draws text with `fillText`, which follows the
+  canvas's CSS direction; on an rtl page every glyph of the name would be anchored at its right edge and the letters would overlap
+  (found while checking Task 8). Only the surroundings of the preview mirror.
+- Pager: "previous/next" arrows swap direction in RTL (use logical meaning, not fixed `◀ ▶`). The counter ("2 / 4") is forced left to right;
+  otherwise the bidi algorithm shows it as "4 / 2".
+- User data inside status messages (the imported file name) is wrapped in Unicode FSI…PDI (`isolate()`), the plain-text form of `<bdi>`
+  (status text is set with `textContent`, so markup is not an option), so Latin/Hebrew runs do not scramble the sentence.
 - Counters and plurals use the Hebrew categories from `Intl.PluralRules`.
 
 **Zip entry names** (Hebrew-relevant details below)
