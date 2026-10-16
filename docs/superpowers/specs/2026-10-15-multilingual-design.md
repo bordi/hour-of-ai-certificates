@@ -19,7 +19,7 @@ replaced, so logic must not depend on markup beyond element ids.
 | Language codes | ISO 639-1: `uk`, `en`, `he`. No `/ua/` alias. |
 | Languages now | `uk`, `en`, `he`. |
 | Languages later | `ar` — **not approved**, may be added in the future. Not implemented, not in the registry. |
-| URL scheme | `/<lang>/` on a single static page. Netlify rewrites `/<lang>/*` → `/index.html` (200); the page reads the first path segment. |
+| URL scheme | `/<lang>/` on a single static page. A catch-all Netlify rewrite `/*` → `/index.html` (200) serves the page for every path; real files (assets, locales, fonts) still take precedence. The page reads the first path segment. |
 | Language detection | See below. Applies only when the URL has no supported language code. |
 | Language selection UI | None. No dropdown or switcher; the language is chosen only by the code in the URL. |
 | Draft languages | `en`, `he` are reachable in dev and on Netlify deploy previews, not in production (see "Draft languages"). Netlify deploys `main` to the live site. |
@@ -41,6 +41,12 @@ replaced, so logic must not depend on markup beyond element ids.
 4. Redirect with `location.replace('/<lang>/')` (no history entry). `/he` → `/he/`.
 
 Unknown segments such as `/fr/` are treated as "no language code". Pure function `detectLocale(pathname, languages)`, unit-tested.
+
+This only works if the host serves the page for unknown paths too, hence the catch-all rewrite. A per-language rewrite would answer
+`/fr/` with Netlify's 404 before any script runs. Trade-off: a mistyped file path returns the page (200) instead of a 404.
+
+**Verification caveat.** `vite dev` and `vite preview` serve `index.html` for every path, so they hide hosting problems. Anything about
+routing, rewrites, headers or redirects is verified on a Netlify deploy preview, not only locally.
 
 ## Draft languages
 
