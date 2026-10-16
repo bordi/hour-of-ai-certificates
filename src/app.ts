@@ -6,7 +6,8 @@ import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
 import { activeLocale, applyToDocument, isolate, t } from './i18n';
-import { createFontCoverage, findUnsupported, type HasGlyph } from './glyphs';
+import { createFontCoverage, splitByCoverage, type HasGlyph } from './glyphs';
+import { askToSkip } from './skip-dialog';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -81,16 +82,16 @@ fileInput.addEventListener('change', async () => {
 
 generateBtn.addEventListener('click', async () => {
   if (!assets) return;
-  const names = parseNames(textarea.value, activeLocale().name);
-  if (names.length === 0) return setStatus(t('addAtLeastOneName'), true);
-  if (names.length > MAX_NAMES) return setStatus(t('tooManyNames', { max: MAX_NAMES }), true);
-  const unsupported = hasGlyph ? findUnsupported(hasGlyph, names) : [];
-  if (unsupported.length > 0) {
-    // A missing glyph prints as an empty box, so refuse and name the culprits instead.
-    const shown = unsupported.slice(0, 3).map(({ name }) => isolate(name)).join(', ');
-    const list = unsupported.length > 3 ? `${shown}…` : shown;
-    return setStatus(t('unsupportedCharacters', { count: unsupported.length, names: list }), true);
+  const listed = parseNames(textarea.value, activeLocale().name);
+  if (listed.length === 0) return setStatus(t('addAtLeastOneName'), true);
+  if (listed.length > MAX_NAMES) return setStatus(t('tooManyNames', { max: MAX_NAMES }), true);
+
+  // A glyph the font lacks prints as an empty box: let the teacher decide what to do with those names.
+  const { supported: names, unsupported: skipped } = hasGlyph ? splitByCoverage(hasGlyph, listed) : { supported: listed, unsupported: [] };
+  if (skipped.length > 0 && !(await askToSkip($<HTMLDialogElement>('skip-dialog'), skipped, names.length))) {
+    return setStatus('');
   }
+  if (names.length === 0) return;
 
   const myVersion = version;
   const stale = () => myVersion !== version;
@@ -115,7 +116,7 @@ generateBtn.addEventListener('click', async () => {
     downloadBtn.disabled = false;
     printBtn.disabled = false;
     updatePager();
-    setStatus(t('generated', { count: names.length }));
+    setStatus(skipped.length > 0 ? t('generatedSkipped', { count: names.length, skipped: skipped.length }) : t('generated', { count: names.length }));
   } catch (e) {
     if (url) URL.revokeObjectURL(url);
     console.error(e);

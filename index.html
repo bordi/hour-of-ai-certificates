@@ -51,6 +51,19 @@
       <span id="status" role="status" aria-live="polite"></span>
     </footer>
 
+    <dialog id="skip-dialog" aria-labelledby="skip-title">
+      <form method="dialog">
+        <h2 id="skip-title" data-i18n="skipTitle"></h2>
+        <p id="skip-intro"></p>
+        <ul id="skip-list"></ul>
+        <p id="skip-rest"></p>
+        <div class="dialog-actions">
+          <button type="submit" value="back" id="skip-back" data-i18n="skipBack"></button>
+          <button type="submit" value="continue" id="skip-continue" class="primary"></button>
+        </div>
+      </form>
+    </dialog>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

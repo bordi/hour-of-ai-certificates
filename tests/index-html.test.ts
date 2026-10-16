@@ -24,4 +24,11 @@ describe('index.html', () => {
   it('keeps the page counter left to right, so "2 / 4" is not shown as "4 / 2" on rtl pages', () => {
     expect(html).toMatch(/id="page-label"[^>]*dir="ltr"/);
   });
+
+  it('has a skip dialog whose two buttons submit "back" first (the safe default) and "continue"', () => {
+    const form = html.match(/<dialog id="skip-dialog"[\s\S]*?<\/dialog>/)?.[0] ?? '';
+    expect(form).toContain('<form method="dialog">');
+    expect([...form.matchAll(/<button type="submit" value="(\w+)"/g)].map((m) => m[1])).toEqual(['back', 'continue']);
+    for (const id of ['skip-intro', 'skip-list', 'skip-rest']) expect(form).toContain(`id="${id}"`);
+  });
 });

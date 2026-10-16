@@ -33,7 +33,14 @@ export interface Messages {
   addAtLeastOneName: string;
   tooManyNames: string;
   generating: string;
-  unsupportedCharacters: Plural;
+  skipTitle: string;
+  skipIntro: Plural;
+  skipReason: string;
+  skipRest: string;
+  skipNoneValid: string;
+  skipBack: string;
+  skipContinue: string;
+  generatedSkipped: Plural;
   generated: Plural;
   generateFailed: string;
   listChanged: string;

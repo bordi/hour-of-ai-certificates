@@ -33,4 +33,9 @@ button.primary { background: var(--blue); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
 .actions { position: fixed; inset-inline: 0; inset-block-end: 0; display: flex; gap: 12px; align-items: center; justify-content: center; padding: 16px; background: #fff; border-top: 1px solid var(--line); }
 #status { min-width: 240px; color: var(--muted); }
+dialog { width: min(560px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); }
+dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+dialog h2 { margin: 0 0 12px; font-size: 20px; }
+#skip-list { max-height: 40vh; overflow: auto; margin: 12px 0; padding-inline-start: 20px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 #status.error { color: #c62828; }

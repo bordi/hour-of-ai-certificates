@@ -14,12 +14,21 @@ export function createFontCoverage(fontBytes: Uint8Array): HasGlyph {
   return (codePoint) => font.hasGlyphForCodePoint(codePoint);
 }
 
-export function findUnsupported(hasGlyph: HasGlyph, names: readonly string[]): Unsupported[] {
-  const found: Unsupported[] = [];
+/**
+ * Splits a list into the names the font can draw completely and those it cannot, keeping order and duplicates.
+ * A missing glyph would be printed as an empty box, so such names must not reach the certificate.
+ */
+export function splitByCoverage(
+  hasGlyph: HasGlyph,
+  names: readonly string[],
+): { supported: string[]; unsupported: Unsupported[] } {
+  const supported: string[] = [];
+  const unsupported: Unsupported[] = [];
   for (const name of names) {
     const chars = new Set<string>();
     for (const ch of name) if (!hasGlyph(ch.codePointAt(0)!)) chars.add(ch);
-    if (chars.size > 0) found.push({ name, chars: [...chars] });
+    if (chars.size === 0) supported.push(name);
+    else unsupported.push({ name, chars: [...chars] });
   }
-  return found;
+  return { supported, unsupported };
 }
