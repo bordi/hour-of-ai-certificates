@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { PDFDocument } from 'pdf-lib';
-import { renderCertificates, type Assets } from '../src/certificate';
+import { createEngineProbe, renderCertificates, type Assets } from '../src/certificate';
+import { LOCALES } from '../src/locales';
 
 const assets: Assets = {
-  template: new Uint8Array(readFileSync('public/template.pdf')),
-  font: new Uint8Array(readFileSync('public/fonts/WixMadeforDisplay-Bold.ttf')),
+  template: new Uint8Array(readFileSync(`public${LOCALES.uk.templateUrl}`)),
+  font: new Uint8Array(readFileSync(`public${LOCALES.uk.fontUrl}`)),
+  dir: LOCALES.uk.dir,
 };
 
 async function pageTexts(bytes: Uint8Array): Promise<string[]> {
@@ -46,5 +48,34 @@ describe('renderCertificates', () => {
     const name = 'Олександра-Анастасія Костянтинопольська-Вишневецька Святославівна';
     const text = (await pageTexts(await renderCertificates(assets, [name])))[0];
     for (const part of name.split(' ')) expect(text).toContain(part);
+  });
+
+  it('a right-to-left locale leaves left-to-right names as they are', async () => {
+    const rtl: Assets = { ...assets, dir: 'rtl' };
+    const names = ['Ivan Smith', 'Тарас Шевченко', 'José Müller 2'];
+    const texts = await pageTexts(await renderCertificates(rtl, names));
+    names.forEach((n, i) => expect(texts[i]).toContain(n));
+  });
+});
+
+describe('createEngineProbe', () => {
+  // fontkit picks the direction from the first lettered character, even if the font has no glyph for it.
+  const reverses = createEngineProbe(assets.font);
+
+  it('reverses text whose first letter is Hebrew or Arabic', () => {
+    expect(reverses('דני')).toBe(true);
+    expect(reverses('(דני)')).toBe(true);
+    expect(reverses('12 דני')).toBe(true);
+    expect(reverses('דני Ivan')).toBe(true);
+    expect(reverses('مرحبا')).toBe(true);
+  });
+
+  it('leaves text alone whose first letter is not right-to-left', () => {
+    expect(reverses('Ivan')).toBe(false);
+    expect(reverses('Тарас Шевченко')).toBe(false);
+    expect(reverses('Ivan דני')).toBe(false);
+    expect(reverses('12')).toBe(false);
+    expect(reverses(' ')).toBe(false);
+    expect(reverses('')).toBe(false);
   });
 });
