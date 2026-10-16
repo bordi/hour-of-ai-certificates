@@ -47,4 +47,15 @@ describe('parseNames', () => {
       expect(parseNames('דוד כהן', KEEP_ASCII_APOSTROPHE)).toEqual(['דוד כהן']);
     });
   });
+
+  describe('invisible direction marks', () => {
+    it('removes LRM, RLM, ALM, embeddings and isolates (they would print as empty boxes)', () => {
+      expect(parseNames('\u200fדני\u200e כהן\u202b\u202c', KEEP_ASCII_APOSTROPHE)).toEqual(['דני כהן']);
+      expect(parseNames('Da\u2066vid\u2069 \u061cSmith', KEEP_ASCII_APOSTROPHE)).toEqual(['David Smith']);
+    });
+
+    it('a line that holds only marks is dropped', () => {
+      expect(parseNames('\u200f\u200e\nדני', KEEP_ASCII_APOSTROPHE)).toEqual(['דני']);
+    });
+  });
 });

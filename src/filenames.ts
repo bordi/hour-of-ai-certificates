@@ -1,4 +1,5 @@
 import type { FileNameStrategy } from './locales';
+import { BIDI_CONTROLS } from './names';
 
 const MAP: Record<string, string> = {
   а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e', є: 'ie', ж: 'zh', з: 'z',
@@ -35,8 +36,6 @@ export function transliterate(input: string): string {
   return out;
 }
 
-// Invisible direction marks (LRM, RLM, ALM, embeddings, isolates) turn up in pasted Hebrew; they must not reach a file name.
-const BIDI_CONTROLS = /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/gu;
 // Dropped, not replaced, so "O'Brien" becomes "OBrien" in every language (as the transliteration already does).
 const APOSTROPHES = /['ʼ’`׳]/gu;
 const MAX_SLUG_BYTES = 100;

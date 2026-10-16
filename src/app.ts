@@ -181,7 +181,7 @@ async function init() {
         return new Uint8Array(await res.arrayBuffer());
       }),
     );
-    assets = { template, font };
+    assets = { template, font, dir: activeLocale().dir };
     hasGlyph = createFontCoverage(font);
     await preview.show(template);
     generateBtn.disabled = false;
