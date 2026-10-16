@@ -120,6 +120,7 @@ downloadBtn.addEventListener('click', async () => {
   if (!generated || !assets) return;
   const gen = generated;
   const { names } = gen;
+  const { fileNameStrategy } = activeLocale();
   const myVersion = version;
   const stale = () => myVersion !== version || generated !== gen;
   downloadBtn.disabled = true;
@@ -130,7 +131,7 @@ downloadBtn.addEventListener('click', async () => {
       setStatus(t('preparingArchive', { current: i + 1, total: names.length }));
       const data = await renderCertificates(assets, [names[i]]);
       if (stale()) return;
-      entries.push({ name: certificateFileName(i, names.length, names[i]), data });
+      entries.push({ name: certificateFileName(i, names.length, names[i], fileNameStrategy), data });
     }
     const zip = await buildZip(entries);
     if (stale()) return;

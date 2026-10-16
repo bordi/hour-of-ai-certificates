@@ -45,6 +45,9 @@ export interface Messages {
   popupBlocked: string;
 }
 
+/** How a student's name becomes a zip entry name: transliterate Cyrillic (KMU-2010), or keep the letters as they are. */
+export type FileNameStrategy = 'kmu-2010' | 'keep';
+
 export interface CsvRules {
   /** A first row is a header if any of its cells contains one of these words (lower case). */
   headerWords: readonly string[];
@@ -71,4 +74,5 @@ export interface Locale {
   exampleCsvUrl: string;
   csv: CsvRules;
   name: NamePolicy;
+  fileNameStrategy: FileNameStrategy;
 }

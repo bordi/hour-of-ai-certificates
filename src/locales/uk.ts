@@ -12,6 +12,7 @@ export const uk: Locale = {
     fallbackEncoding: 'windows-1251',
   },
   name: { apostrophes: "'ʼ`" },
+  fileNameStrategy: 'kmu-2010',
   messages: {
     title: 'Сертифікати «Година ШІ»',
     heading: 'Сертифікати «Година ШІ»',
