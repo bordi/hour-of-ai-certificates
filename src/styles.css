@@ -14,7 +14,9 @@ h1 { margin: 0 0 4px; font-size: 28px; color: var(--blue); }
 .lead { margin: 0 0 24px; color: var(--muted); }
 .layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
 .preview { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
-#preview-canvas { display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
+/* pdf.js draws text with fillText, which follows the canvas's CSS direction; on an rtl page every glyph
+   would be anchored at its right edge and overlap. The certificate is always laid out left to right. */
+#preview-canvas { direction: ltr; display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
 [hidden] { display: none !important; }
 .pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; }
 .pager button { min-width: 44px; }

@@ -20,4 +20,8 @@ describe('index.html', () => {
   it('keeps the pager arrows out of the accessible name, so they can be mirrored', () => {
     expect(html.match(/<span class="arrow" aria-hidden="true">/g)).toHaveLength(2);
   });
+
+  it('keeps the page counter left to right, so "2 / 4" is not shown as "4 / 2" on rtl pages', () => {
+    expect(html).toMatch(/id="page-label"[^>]*dir="ltr"/);
+  });
 });
