@@ -37,6 +37,12 @@ export const uk: Locale = {
     addAtLeastOneName: 'Додайте хоча б одне ім’я.',
     tooManyNames: 'Забагато імен: максимум {max}.',
     generating: 'Формуємо сертифікати…',
+    unsupportedCharacters: {
+      one: 'У {count} імені є символи, яких немає у шрифті сертифіката: {names}',
+      few: 'У {count} іменах є символи, яких немає у шрифті сертифіката: {names}',
+      many: 'У {count} іменах є символи, яких немає у шрифті сертифіката: {names}',
+      other: 'У {count} іменах є символи, яких немає у шрифті сертифіката: {names}',
+    },
     generated: {
       one: 'Готово: {count} сертифікат.',
       few: 'Готово: {count} сертифікати.',

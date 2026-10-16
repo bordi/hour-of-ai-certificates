@@ -6,6 +6,7 @@ import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
 import { activeLocale, applyToDocument, isolate, t } from './i18n';
+import { createFontCoverage, findUnsupported, type HasGlyph } from './glyphs';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -20,6 +21,7 @@ const pageLabel = $('page-label');
 const preview = new Preview($<HTMLCanvasElement>('preview-canvas'));
 
 let assets: Assets | null = null;
+let hasGlyph: HasGlyph | null = null;
 let generated: { names: string[]; combinedUrl: string } | null = null;
 // Bumped on every list edit; async handlers capture it and bail if it changed.
 let version = 0;
@@ -82,6 +84,13 @@ generateBtn.addEventListener('click', async () => {
   const names = parseNames(textarea.value, activeLocale().name);
   if (names.length === 0) return setStatus(t('addAtLeastOneName'), true);
   if (names.length > MAX_NAMES) return setStatus(t('tooManyNames', { max: MAX_NAMES }), true);
+  const unsupported = hasGlyph ? findUnsupported(hasGlyph, names) : [];
+  if (unsupported.length > 0) {
+    // A missing glyph prints as an empty box, so refuse and name the culprits instead.
+    const shown = unsupported.slice(0, 3).map(({ name }) => isolate(name)).join(', ');
+    const list = unsupported.length > 3 ? `${shown}…` : shown;
+    return setStatus(t('unsupportedCharacters', { count: unsupported.length, names: list }), true);
+  }
 
   const myVersion = version;
   const stale = () => myVersion !== version;
@@ -173,6 +182,7 @@ async function init() {
       }),
     );
     assets = { template, font };
+    hasGlyph = createFontCoverage(font);
     await preview.show(template);
     generateBtn.disabled = false;
     setStatus('');
