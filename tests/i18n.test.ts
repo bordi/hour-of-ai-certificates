@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { translate } from '../src/i18n';
+import { isolate, translate } from '../src/i18n';
 import { LOCALES, type Locale, type Plural } from '../src/locales';
 
 const uk = (key: Parameters<typeof translate>[1], vars?: Parameters<typeof translate>[2]) => translate(LOCALES.uk, key, vars);
@@ -71,5 +71,16 @@ describe('translate with other plural systems', () => {
   it('uses `other` when the locale has no form for the selected category', () => {
     const he = withGenerated('he', { one: 'one', other: 'other' });
     expect(translate(he, 'generated', { count: 2 })).toBe('other');
+  });
+});
+
+describe('isolate', () => {
+  it('wraps text in FSI and PDI so it cannot reorder the surrounding sentence', () => {
+    expect(isolate('דוד.csv')).toBe('\u2068דוד.csv\u2069');
+  });
+
+  it('fills a placeholder without changing the visible text', () => {
+    const message = uk('importedFromFile', { count: 1, file: isolate('klas.csv') });
+    expect(message.replace(/[\u2068\u2069]/g, '')).toBe('Завантажено 1 ім’я з файлу «klas.csv». Перевірте список.');
   });
 });

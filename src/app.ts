@@ -5,7 +5,7 @@ import { renderCertificates, type Assets } from './certificate';
 import { certificateFileName } from './filenames';
 import { buildZip } from './zip';
 import { Preview } from './preview';
-import { activeLocale, applyToDocument, t } from './i18n';
+import { activeLocale, applyToDocument, isolate, t } from './i18n';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const textarea = $<HTMLTextAreaElement>('names');
@@ -74,7 +74,7 @@ fileInput.addEventListener('change', async () => {
   }
   textarea.value = names.join('\n');
   textarea.dispatchEvent(new Event('input'));
-  setStatus(t('importedFromFile', { count: names.length, file: file.name }));
+  setStatus(t('importedFromFile', { count: names.length, file: isolate(file.name) }));
 });
 
 generateBtn.addEventListener('click', async () => {

@@ -11,6 +11,9 @@ export function translate(locale: Locale, key: MessageKey, vars: Vars = {}): str
   return template.replace(/\{(\w+)\}/g, (placeholder, name: string) => (name in vars ? String(vars[name]) : placeholder));
 }
 
+/** Wraps user-supplied text in a first-strong isolate (FSI…PDI), the plain-text form of <bdi>, so it cannot reorder the sentence around it. */
+export const isolate = (text: string): string => `\u2068${text}\u2069`;
+
 // Set once at startup from the URL (see router.ts) before anything is rendered.
 let active: Locale = LOCALES.uk;
 
