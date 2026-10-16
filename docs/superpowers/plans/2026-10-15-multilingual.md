@@ -150,8 +150,9 @@ There is no language switcher: the language is chosen only by the code in the UR
 
 **Files:** Create `README.md`.
 
-- [ ] Contents as agreed: purpose, languages and URL scheme, run/test/build, structure, language detection, **How to add a language**, calibrating `nameBox`, deployment, privacy, links to spec and plan.
-- [ ] Commit: `docs: add readme with instructions for adding a language`
+- [x] Contents as agreed: purpose, languages and URL scheme, run/test/build, structure, which language a visitor gets, **how to add a language**, where the name goes, deployment, privacy, known limits, links to spec and plan. Written for developers and designers new to the repository; English like the other documents.
+- [x] It describes what exists: the name position is **one shared `NAME_BOX`** in `src/layout.ts` for now (the spec's per-locale box arrives with Task 13), and production falls back to Ukrainian while English is a draft.
+- [x] Commit: `docs: add readme with instructions for adding a language`
 
 ### Task 13 (blocked): Place final templates, choose fonts, calibrate, go live
 
