@@ -116,7 +116,7 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] `supportedLocales()` = registered locales filtered by `filterLocales(locales, includeDrafts)`. Drafts are included when `import.meta.env.DEV` (`npm run dev`) or `VITE_ENABLE_DRAFT_LOCALES === 'true'`; a local `vite build` + `vite preview` behaves like production. `route()` takes the locale list as a parameter, so tests can use stand-in drafts.
 - [x] `netlify.toml`: `[context.production.environment]` `false`; `[context.deploy-preview.environment]` and `[context.branch-deploy.environment]` `true`.
 - [x] Tests: production set is ready-only and `uk` is ready; `/en/` in production falls through to detection; with drafts `/en/` is served and English is the fallback for unknown codes; `netlify.toml` has the three contexts and the catch-all rewrite.
-- [ ] Verify on Netlify once Task 11 adds `en` and `he` (until then there is no draft locale to show): the preview serves `/en/` and `/he/`, production redirects both to a ready locale. Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
+- [ ] Verify on Netlify now that Task 11 added `en` and `he` (see the checklist in Task 11): the preview serves `/en/` and `/he/`, production redirects both to a ready locale. Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
 - [ ] Pull request description lists the known limits: draft locales use the Ukrainian certificate text; Hebrew names cannot be drawn with the current font; Hebrew/English wording not yet reviewed. (Written when `en`/`he` land.)
 - [x] Commit: `feat: gate draft locales to dev and deploy previews`
 
@@ -135,13 +135,15 @@ There is no language switcher: the language is chosen only by the code in the UR
 
 ### Task 11: `en` and `he` locales (draft)
 
-**Files:** Create `src/locales/en.ts`, `src/locales/he.ts`, `public/locales/{en,he}/template.pdf`, `public/locales/{en,he}/example.csv`.
+**Files:** Create `src/locales/en.ts`, `src/locales/he.ts`, `public/locales/{en,he}/template.pdf`, `public/locales/{en,he}/example.csv`; modify `src/locales/index.ts` and tests.
 
-- [ ] Translate messages (review of Hebrew and English wording by a native speaker before `ready`).
-- [ ] `template.pdf` for `en` and `he` is a copy of the current template; same `nameBox`. Font is the current Wix Madefor Display Bold for every locale (it has no Hebrew; see spec).
-- [ ] Example CSVs use names the current font can draw (Latin incl. diacritics such as `José`; Hebrew example added in Task 13 once a font exists).
-- [ ] Mark both `draft`; tests for registry completeness and example CSV parsing per locale.
-- [ ] Commits: `feat: add english locale (draft)`, `feat: add hebrew locale (draft)`
+- [x] Messages translated into English and Hebrew (every key; plural forms `one`/`other` for English and `one`/`two`/`other` for Hebrew, a test checks that each language defines all the forms it needs). The wording is a first draft: **a native speaker must review the Hebrew and the English before `ready`** (Task 13). The Hebrew name of the initiative, "שעה של בינה מלאכותית", is my best guess and also needs checking.
+- [x] `template.pdf` for `en` and `he` is a copy of the current template; same `nameBox`. Font is the current Wix Madefor Display Bold for every locale (it has no Hebrew; see spec).
+- [x] `csv`: `en` uses `windows-1252` and English header words; `he` uses `windows-1255` and Hebrew header words (also the Latin ones). `name.apostrophes` is `ʼ` only for both, so `O'Brien` and `ג'ורג'` stay as typed; `fileNameStrategy` is `keep`.
+- [x] Example CSVs use names the current font can draw (Latin with diacritics for `en`; Latin names under a Hebrew header for `he`). They are replaced by Hebrew names in Task 13, once a Hebrew font exists.
+- [x] Both are `draft`: reachable in dev and on deploy previews, not in production. Tests: every plural form present, registry order and directions, only `uk` ready, example CSVs parse.
+- [ ] To verify on the deploy preview (this also closes the check left open in Task 9): `/en/` and `/he/` open (Hebrew mirrored, certificate text is still Ukrainian); an unknown code (`/fr/`) goes to `/en/` for a non-Ukrainian browser; the example CSV of each language loads and generates; on the production site (`main`) `/en/` and `/he/` still end on `/uk/`.
+- [x] Commits: `feat: add english locale (draft)`, `feat: add hebrew locale (draft)`
 
 ### Task 12: README
 
