@@ -6,8 +6,8 @@ import { LOCALES } from '../src/locales';
 const EXPECTED: Record<string, string[]> = {
   uk: ['Шевченко Тарас', 'Українка Леся', 'Франко Іван', 'Костенко Ліна', 'Симоненко Василь'],
   en: ['Anna Smith', 'José García', "Seán O'Brien", 'Zoë Müller', 'Łukasz Kowalski'],
-  // Latin names for now: the current font has no Hebrew (see plan, Task 13).
-  he: ['Daniel Cohen', 'Sara Levi', 'Yossi Mizrahi', 'Noa Peretz', 'Itai Katz'],
+  // The current font has no Hebrew, so generating these names shows the skip dialog until a font is chosen (plan, Task 13).
+  he: ['דניאל כהן', 'שרה לוי', 'יוסי מזרחי', 'נועה פרץ', 'איתי כץ'],
 };
 
 describe.each(Object.entries(LOCALES))('example csv of locale %s', (code, locale) => {
