@@ -32,6 +32,12 @@ describe('route', () => {
     expect(replace).toHaveBeenCalledWith('/uk/');
   });
 
+  it.each(['/ru/', '/RU', '/ru/index.html'])('sends the Russian code %s to Ukrainian, whatever the browser says', (pathname) => {
+    const { loc, replace } = at(pathname);
+    expect(route(loc, ['en-US'])).toBe(false);
+    expect(replace).toHaveBeenCalledWith('/uk/');
+  });
+
   it('sends an unsupported language code to the detected one', () => {
     const { loc, replace } = at('/fr/');
     route(loc, ['uk']);

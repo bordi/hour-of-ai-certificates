@@ -16,6 +16,21 @@ describe('detectLocale', () => {
       expect(detectLocale(pathname, ['uk'], ALL)).toBe(expected);
     });
 
+    it.each([
+      ['/ru/', 'uk'],
+      ['/RU/', 'uk'],
+      ['/ru', 'uk'],
+      ['/ru/anything', 'uk'],
+      ['/iw/', 'he'],
+    ])('alias %s -> %s, whatever the browser language', (pathname, expected) => {
+      expect(detectLocale(pathname, ['en'], ALL)).toBe(expected);
+    });
+
+    it('an alias whose target is not supported is treated like an unknown code', () => {
+      expect(detectLocale('/ru/', ['he-IL'], ['en', 'he'])).toBe('he');
+      expect(detectLocale('/ru/', [], ['en', 'he'])).toBe('en');
+    });
+
     it('beats the browser language', () => {
       expect(detectLocale('/he/', ['uk-UA', 'en'], ALL)).toBe('he');
     });
