@@ -122,13 +122,15 @@ There is no language switcher: the language is chosen only by the code in the UR
 
 ### Task 10: Hebrew rendering in PDF
 
-**Files:** Create `src/bidi.ts`, `tests/bidi.test.ts`; modify `src/certificate.ts`, `src/layout.ts` call sites.
+**Files:** `package.json`, `package-lock.json`; create `src/bidi.ts`, `src/glyphs.ts`, `tests/bidi.test.ts`, `tests/glyphs.test.ts`; modify `src/certificate.ts`, `src/names.ts`, `src/filenames.ts`, `src/app.ts`, `src/locales/{types,uk}.ts`, tests.
 
-- [ ] `npm install bidi-js`; `toVisual(text, dir)` reorders by grapheme cluster, keeps combining marks attached.
-- [ ] `drawName` and `layoutName` measure and draw the visual string; two-line split keeps logical word order.
-- [ ] Glyph coverage check before generation; surface the offending names in the UI. With the current font (no Hebrew) this is what a Hebrew name triggers.
-- [ ] Unit tests of `toVisual` need no font: pure Hebrew, Hebrew with niqqud, mixed Hebrew + Latin, digits, `׳`/`״`, long name wrapping to two lines. Rendering tests with real Hebrew glyphs wait for the font (Task 13).
-- [ ] Commit: `feat: visual ordering for rtl names in pdf`
+- [x] `npm install bidi-js` (1.1.0; pulls in `require-from-string`).
+- [x] Finding while checking real output: fontkit (inside pdf-lib) reverses all glyphs of a text whose first lettered character is from a right-to-left script. A ready-made visual string is therefore reversed twice (a Latin word inside Hebrew came out mirrored). The plan's `toVisual(text)` became `visualRuns(text, dir)`: runs of one direction in visual order, each handed over in logical order, and `glyphOrderInput(run, engineReverses)` compensates where the engine disagrees with the run. `certificate.ts` probes fontkit (`createEngineProbe`) and draws run by run; layout and sizing stay on the logical text.
+- [x] Bidi control characters are stripped when names are read (shared `BIDI_CONTROLS`, also used for file names).
+- [x] Glyph coverage check before generation: a missing glyph prints as an empty box without any error (seen with a Hebrew name and the current font). `findUnsupported()` lists the affected names and their missing characters; `app.ts` refuses to generate and names up to three of them (`unsupportedCharacters`, with plural forms).
+- [x] Tests: `visualRuns` (pure Hebrew, niqqud, geresh/gershayim, Latin and digits inside Hebrew, brackets, decomposed é, emoji, ltr locale), `glyphOrderInput`, the fontkit probe (Hebrew/Arabic first letter, neutrals, empty), stripping of bidi controls, coverage with fake and bundled fonts, and Latin/Cyrillic names under an rtl locale.
+- Checked by eye with a system font that has Hebrew (not part of the repo): `דני כהן`, `Ivan דני`, `דני Ivan`, `דני 12`, `דני (שלום)`, niqqud, `José Müller`, Cyrillic all come out in the right order. There is no Hebrew font in the repo, so rendering tests with real glyphs wait for Task 13.
+- [x] Commits: `build: add bidi-js`, `feat: refuse names the font cannot draw`, `feat: draw right-to-left names run by run`, `docs: ...`
 
 ### Task 11: `en` and `he` locales (draft)
 

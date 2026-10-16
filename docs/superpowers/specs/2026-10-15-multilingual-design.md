@@ -102,12 +102,18 @@ Asset URLs are absolute (`/locales/...`), because the page now lives under neste
 The PDF side and the UI side are separate problems.
 
 **PDF name rendering**
-- `pdf-lib` draws glyphs in the order given and does **no bidi reordering**. Hebrew names must be converted to visual order
-  before drawing (planned: `bidi-js`, an implementation of the Unicode Bidirectional Algorithm).
-- Reorder by grapheme cluster, never by code point, so combining marks (niqqud) stay attached to their letter.
-- Mixed content (a Latin name inside a Hebrew list, digits, `'`/`״` punctuation) goes through the same algorithm.
-- Measurement (`layoutName`) must use the visual string; centring is direction-neutral.
-- Two-line wrap keeps logical word order: the first logical words go on the top line, whatever the direction.
+- pdf-lib draws glyphs in the order given and has no bidirectional algorithm. Its shaping engine (fontkit) does one naive thing of its
+  own: if the first lettered character of a text is from a right-to-left script (Hebrew, Arabic), it **reverses every glyph of that text**,
+  Latin words and digits included. Feeding it a correctly ordered visual string therefore reverses it a second time (found by rendering
+  `Ivan דני`: the Latin word came out mirrored).
+- So a name is split with `bidi-js` (Unicode UAX #9, base direction = the locale's) into runs of one direction, in visual order, and drawn
+  run by run. A right-to-left run is handed over in logical order and fontkit's reversal turns it into visual order; where the engine
+  would do the opposite of what the run needs (a left-to-right run, or a right-to-left run without letters to detect the script from)
+  the text is reversed beforehand. Digits and Latin words inside Hebrew keep their own order.
+- Splitting works on grapheme clusters, so niqqud and accents stay with their letter; brackets in right-to-left runs are swapped for their
+  mirror image. Bidi control characters (LRM, RLM, embeddings, isolates) are stripped from names when they are read.
+- Wrapping to two lines and the font-size fit work on the logical text (glyph widths do not depend on order), so the first logical words
+  go on the top line whatever the direction; each line is then drawn run by run.
 - Name order is never swapped ("as entered").
 - The final font must contain Hebrew **and** Latin (and `׳`, `״`, `’`). **Checked on the bundled `WixMadeforDisplay-Bold.ttf`:
   it has no Hebrew letters, no niqqud, no `׳`/`״`, and no `ʼ`.** It does have Latin-1/Latin Extended (`é ñ ü ø ł ß`),
