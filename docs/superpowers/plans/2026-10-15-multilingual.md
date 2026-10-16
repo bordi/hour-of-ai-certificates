@@ -71,6 +71,7 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 - [x] Implement spec rules: path segment → `navigator.languages` in order (`ru`→`uk`, `iw`→`he`) → `en`. While `en` is not registered (until Task 11) the fallback is the first supported locale.
 - [x] Tests: `/uk/`, `/he` (no slash), `/HE/`, unknown `/fr/`, `['ru-RU','en']`→`uk`, `['de','he-IL']`→`he`, `['de']`→`en`, `[]`→`en`, alias whose target is unsupported, inherited keys (`constructor`).
 - [x] `main.ts` is now the entry point: `route()` makes the URL canonical (`/<code>/`, keeps query and hash) via `location.replace` and activates the locale; only then `app.ts` (the former `main.ts`) is imported, so nothing runs on a redirecting page. `i18n.ts` gets `setLocale()`.
+- [x] Added after Task 11 (found on the preview: `/ru/` went to English in an English browser): the aliases `ru` → `uk` and `iw` → `he` also apply to the code in the URL, not only to the browser's languages. Tests in `detect-locale` and `router`.
 - Not deployable on its own: `/uk/` returns 404 on Netlify until the rewrite of Task 6 is in. Merge Tasks 5 and 6 together.
 - The supported set is every registered locale for now; Task 9 restricts it to `ready` locales in production and adds the tests for both sets.
 

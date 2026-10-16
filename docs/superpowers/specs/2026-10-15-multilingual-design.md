@@ -32,7 +32,7 @@ replaced, so logic must not depend on markup beyond element ids.
 
 ## Language detection (root and unknown paths)
 
-1. First path segment is a supported language → use it.
+1. First path segment is a supported language, or an alias of one (`ru` → `uk`, `iw` → `he`) → use it. So `/ru/` always ends on `/uk/`.
 2. Otherwise walk `navigator.languages` in order and take the **first** entry that resolves:
    - base subtag `ru` → `uk`;
    - legacy `iw` → `he`;
