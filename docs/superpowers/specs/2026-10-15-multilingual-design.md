@@ -149,9 +149,10 @@ Per-locale strategy:
 | `he` | Keep Unicode letters. NFC-normalise (macOS filesystems use NFD), replace whitespace runs with `_`. |
 
 Sanitising (shared by all strategies): keep letters, combining marks and digits (`\p{L}\p{M}\p{N}`); collapse everything else to `_`.
-Nothing is transliterated or stripped unless it is illegal in a file name:
+Nothing is transliterated or stripped unless it is illegal in a file name. Apostrophes (`' ʼ ’` `` ` `` and the Hebrew geresh `׳`) are dropped
+rather than turned into `_`, so `O'Brien` becomes `OBrien` in every language (as the Ukrainian transliteration already did):
 - remove `\ / : * ? " < > |`, control characters, and **bidi control characters** (U+200E/F, U+202A–E, U+2066–9);
-- trim trailing dots/spaces (Windows rejects them); cap name length (~100 bytes of UTF-8);
+- trim trailing dots/spaces (Windows rejects them); cap the name part at 100 bytes of UTF-8, cutting on grapheme boundaries;
 - empty result → `student`.
 
 Compatibility: JSZip sets the zip UTF-8 flag for non-ASCII names. Windows 10+ Explorer and macOS Archive Utility read it; older

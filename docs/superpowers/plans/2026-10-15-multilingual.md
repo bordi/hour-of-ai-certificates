@@ -86,13 +86,14 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 
 ### Task 7: Per-locale import, normalisation and file names
 
-**Files:** Modify `src/csv.ts`, `src/names.ts`, `src/filenames.ts` and their tests.
+**Files:** Modify `src/csv.ts`, `src/names.ts`, `src/filenames.ts`, `src/app.ts`, `src/locales/{types,index,uk}.ts` and their tests.
 
-- [ ] `decodeText(bytes, fallbackEncoding)`; `isHeader` takes the locale's words. Tests for `windows-1255` and `windows-1252`.
-- [ ] `normalizeName(raw, policy)`: rewrite a character only if the locale's font cannot render it; `uk` keeps today's behaviour.
-- [ ] Filename strategies `uk` (transliterate Cyrillic, keep every other letter), `en` and `he` (keep Unicode letters, NFC); shared sanitiser keeps `\p{L}\p{M}\p{N}` and removes only illegal characters (forbidden characters, bidi controls, trailing dots, length cap, `student` fallback). Tests include `José` (kept, in `uk` and `en`), `ñ ü ø ł`, a decomposed `é`, Hebrew name, bidi control characters, long name, empty name.
-- [ ] Names are NFC-normalised before drawing and naming.
-- [ ] Commits: `refactor: per-locale csv header words and fallback encoding`, `refactor: per-locale name normalization policy`, `feat: per-locale zip entry names`
+- [x] `decodeText(bytes, fallbackEncoding)`; `parseCsvNames(text, headerWords, policy)`. `Locale.csv` holds the header words and the fallback encoding (`uk`: `windows-1251`). Header words are split with `\p{M}` so niqqud stays attached. Tests for `windows-1255`, `windows-1252`, UTF-8 preferred over the fallback, Hebrew header words, and not borrowing another locale's words.
+- [x] `normalizeName(raw, policy)`; `Locale.name.apostrophes` lists the characters rewritten to `’` (`uk`: `'ʼ` and the backtick, as before; a locale whose font draws `'` lists only `ʼ`). Names are NFC-normalised here, so drawing and file naming both get the composed form. Tests: `é ñ ü ø ł ß` kept, decomposed `é` composed, `O'Brien` and `ג'ורג'` untouched under the minimal policy.
+- [x] `Locale.fileNameStrategy`: `'kmu-2010'` (`uk`: transliterate Cyrillic, keep every other letter) or `'keep'` (`en`, `he`). Shared sanitiser keeps `\p{L}\p{M}\p{N}`; strips bidi controls; drops apostrophes; collapses the rest to `_`; caps the name at 100 UTF-8 bytes on grapheme boundaries; `student` fallback. Tests include `José` (both strategies), decomposed `é`, Hebrew with and without niqqud, forbidden characters, bidi controls, long names.
+- [x] `tests/zip.test.ts`: entries with Hebrew and `é` round-trip and carry the UTF-8 file-name flag. Display in Windows Explorer and macOS Archive Utility still has to be checked by hand (Task 13).
+- Behaviour on `/uk/` is unchanged except that `é` and other non-Cyrillic letters now survive in file names (`José` was `Jos`).
+- [x] Commits: `refactor: per-locale csv header words and fallback encoding`, `refactor: per-locale name normalization policy`, `feat: per-locale zip entry names`
 
 ### Task 8: RTL-ready UI
 
