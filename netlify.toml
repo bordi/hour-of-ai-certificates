@@ -5,15 +5,10 @@
 [build.environment]
   NODE_VERSION = "24"
 
-# One page serves every language: /<code>/ is rewritten to index.html and the page reads the code.
-# Add a pair of rules for each language that goes live.
+# One page serves every path: it reads the language code, and sends unknown codes (/fr/, /en/ while
+# draft) through language detection itself. Files that exist (assets, locales, fonts) still win.
 [[redirects]]
-  from = "/uk"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/uk/*"
+  from = "/*"
   to = "/index.html"
   status = 200
 
