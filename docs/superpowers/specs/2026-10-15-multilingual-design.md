@@ -120,8 +120,12 @@ The PDF side and the UI side are separate problems.
   Cyrillic (`і ї`), `'`, `’` and combining accents. Consequence: with the current font the `he` locale can only be exercised
   with Latin/Cyrillic names; a Hebrew name cannot be drawn until a Hebrew-capable font is chosen (with the designers; OFL
   candidates such as Heebo, Assistant, Rubik).
-- Before generating, check glyph coverage per name; report offending names instead of failing with a generic error. This is
-  what users see today's font limitation as, and it stays useful afterwards.
+- Before generating, check glyph coverage per name: a glyph the font lacks is printed as an empty box, silently. Names that cannot be
+  drawn are not printed. If there are any, a dialog (native `<dialog>`, Escape or "back" cancel) lists each such name with the characters
+  that are missing and offers two choices: **go back to editing the list** (the default), or **create certificates for the remaining
+  names** (the button shows how many). When no name passes, only "back" is offered. After "create for the rest" the status line says how
+  many names were left out. This is what users see today's font limitation as (Hebrew names), and it stays useful afterwards (for example
+  for characters no font covers).
 - Names are NFC-normalised before drawing, so a decomposed `é` (`e` + U+0301) typed or pasted on macOS is drawn as one glyph.
 
 **Input**
