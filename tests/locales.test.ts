@@ -1,10 +1,27 @@
 import { existsSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
-import { LOCALES, getLocale, type Plural } from '../src/locales';
+import { LOCALES, filterLocales, getLocale, type Plural } from '../src/locales';
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 const forms = (value: string | Plural): string[] =>
   typeof value === 'string' ? [value] : (Object.values(value) as string[]);
+
+describe('filterLocales', () => {
+  const ready = LOCALES.uk;
+  const draft = { ...ready, code: 'en', status: 'draft' as const };
+
+  it('production: only ready locales', () => {
+    expect(filterLocales([ready, draft], false)).toEqual([ready]);
+  });
+
+  it('dev and deploy previews: drafts too', () => {
+    expect(filterLocales([ready, draft], true)).toEqual([ready, draft]);
+  });
+
+  it('uk is ready, so production always has a language to serve', () => {
+    expect(filterLocales(Object.values(LOCALES), false).map((l) => l.code)).toContain('uk');
+  });
+});
 
 describe('locale registry', () => {
   it('looks up registered locales by code', () => {

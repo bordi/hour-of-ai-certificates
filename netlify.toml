@@ -5,6 +5,16 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# Locales still marked `draft` (no final certificate template yet) are served only on previews.
+[context.production.environment]
+  VITE_ENABLE_DRAFT_LOCALES = "false"
+
+[context.deploy-preview.environment]
+  VITE_ENABLE_DRAFT_LOCALES = "true"
+
+[context.branch-deploy.environment]
+  VITE_ENABLE_DRAFT_LOCALES = "true"
+
 # One page serves every path: it reads the language code, and sends unknown codes (/fr/, /en/ while
 # draft) through language detection itself. Files that exist (assets, locales, fonts) still win.
 [[redirects]]
