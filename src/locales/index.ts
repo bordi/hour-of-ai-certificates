@@ -1,10 +1,11 @@
 import { en } from './en';
+import { he } from './he';
 import { uk } from './uk';
 import type { Locale } from './types';
 
 export type { CsvRules, Direction, FileNameStrategy, Locale, LocaleStatus, Messages, NamePolicy, Plural } from './types';
 
-export const LOCALES = { uk, en } satisfies Record<string, Locale>;
+export const LOCALES = { uk, en, he } satisfies Record<string, Locale>;
 
 export type LocaleCode = keyof typeof LOCALES;
 
