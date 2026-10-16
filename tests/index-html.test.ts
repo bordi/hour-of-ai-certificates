@@ -12,4 +12,12 @@ describe('index.html', () => {
       for (const key of used) expect(Object.keys(locale.messages), key).toContain(key);
     }
   });
+
+  it('lets the browser pick the direction of the names list (Hebrew and Latin lines mix)', () => {
+    expect(html).toMatch(/<textarea[^>]*id="names"[^>]*dir="auto"/);
+  });
+
+  it('keeps the pager arrows out of the accessible name, so they can be mirrored', () => {
+    expect(html.match(/<span class="arrow" aria-hidden="true">/g)).toHaveLength(2);
+  });
 });
