@@ -5,6 +5,7 @@ import { LOCALES } from '../src/locales';
 
 const EXPECTED: Record<string, string[]> = {
   uk: ['Шевченко Тарас', 'Українка Леся', 'Франко Іван', 'Костенко Ліна', 'Симоненко Василь'],
+  en: ['Anna Smith', 'José García', "Seán O'Brien", 'Zoë Müller', 'Łukasz Kowalski'],
 };
 
 describe.each(Object.entries(LOCALES))('example csv of locale %s', (code, locale) => {

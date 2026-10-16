@@ -52,6 +52,13 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
     expect(() => new TextDecoder(locale.csv.fallbackEncoding)).not.toThrow();
   });
 
+  it('defines every plural form its language needs', () => {
+    const needed = new Intl.PluralRules(locale.code).resolvedOptions().pluralCategories;
+    for (const [name, value] of Object.entries(locale.messages)) {
+      if (typeof value !== 'string') expect(Object.keys(value).sort(), name).toEqual(expect.arrayContaining([...needed].sort()));
+    }
+  });
+
   it('has no empty messages', () => {
     for (const [name, value] of Object.entries(locale.messages)) {
       for (const form of forms(value)) expect(form.trim(), name).not.toBe('');
@@ -65,5 +72,17 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
       expect(first, name).toContain('count');
       for (const p of rest) expect(p, name).toEqual(first);
     }
+  });
+});
+
+describe('registered locales', () => {
+  it('knows uk and en, with the direction of each language', () => {
+    expect(Object.keys(LOCALES)).toEqual(['uk', 'en']);
+    expect(Object.values(LOCALES).map((l) => l.dir)).toEqual(['ltr', 'ltr']);
+  });
+
+  it('only uk is ready; en is a draft until its final template exists', () => {
+    expect(filterLocales(Object.values(LOCALES), false).map((l) => l.code)).toEqual(['uk']);
+    expect(filterLocales(Object.values(LOCALES), true).map((l) => l.code)).toEqual(['uk', 'en']);
   });
 });
