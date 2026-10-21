@@ -6,6 +6,10 @@ Initiative context: https://hourofai.com.ua — "Година ШІ", a global in
 hands-on AI/coding. Anyone can host an event (schools, libraries, communities, parents). This tool is built for the participants
 who join the initiative (event hosts and teachers issuing certificates to their students).
 
+In Israel the local initiative is **Hour of Vibe Code**, "שעת הוויב קוד" (https://hourofvibecode.co.il, Code.org and Wix):
+events where students write code in plain language with AI. Its site speaks in the plural and pairs gender forms
+("תלמידים ותלמידות"); the Hebrew texts follow it (checked 2026-10-21). The Hebrew certificate is that initiative's.
+
 ## Goal
 
 The same generator, served per language under its own URL (`/uk/`, `/en/`, `/he/`). Each language has its own UI strings,
@@ -23,8 +27,10 @@ replaced, so logic must not depend on markup beyond element ids.
 | Language detection | See below. Applies only when the URL has no supported language code. |
 | Language selection UI | None. No dropdown or switcher; the language is chosen only by the code in the URL. |
 | Draft languages | `en`, `he` are reachable in dev and on Netlify deploy previews, not in production (see "Draft languages"). Netlify deploys `main` to the live site. |
-| Templates | One PDF per language. New designs (including a redesign of the Ukrainian one) are still in development. **For now every locale uses a copy of the current template** so the site can be tested end to end. Placing the final PDFs and calibrating name positions is a deferred task (see "Template calibration"). |
-| Fonts | Undecided. For now every locale uses the font already in the project (Wix Madefor Display Bold; Wix Madefor Text for the web UI). See the Hebrew limitation below. |
+| Templates | One PDF per language, any size with A4-landscape proportions (the preview frame is 842:595). **`he` has its final template** (2026-10-21, 1212.48 × 856.8 pt). `uk` (redesign) and `en` still use a copy of the 2025 Ukrainian template. See "Template calibration". |
+| Fonts | `uk`, `en`: Wix Madefor Display Bold. `he`: Wix Madefor Hebrew (`WMHT-V7-Regular.otf`, SIL OFL, Hebrew + Latin + Cyrillic); only Regular exists, so the name is drawn with a synthetic bold (fill and outline). Web UI: Wix Madefor Text with the browser's fallback fonts. |
+| Hebrew names on `uk`/`en` | Not printed, by decision (2026-10-21): their font has no Hebrew, and Israel has its own initiative and page (`/he/`). The skip dialog names them; no fallback font. |
+| Name style | Per locale: position and size range (`box`), colour (the template's own blue) and synthetic-bold strength, all in the template's own points. |
 | Name on certificate | Printed exactly as entered (no reordering, no case changes). Locale-specific normalisation only where the font cannot render the character. Letters with diacritics (`é`, `ñ`, `ü`, `ø`, `ł`, …) are never stripped or replaced. |
 | Zip entry names | Option B: keep the student's name with its original letters (including diacritics and Hebrew), with a leading number. Correct names matter more than ASCII-only. Must be verified on Windows and macOS. |
 | README | Added (`README.md`), including "How to add a language". |
@@ -61,7 +67,7 @@ Mechanism: the build flag `VITE_ENABLE_DRAFT_LOCALES`. `npm run dev` enables it;
 know the locales the flag allows.
 
 Release flow: pushing to `main` deploys production (only `ready` locales). Later, a separate push puts the final PDFs in place,
-sets `nameBox`, and flips a locale to `ready`. Deploy Previews are enabled for the Netlify site (confirmed by the stakeholder).
+sets the locale's `nameStyle`, and flips a locale to `ready`. Deploy Previews are enabled for the Netlify site (confirmed by the stakeholder).
 
 **There is no language switcher.** The language is changed only by editing the code in the URL (`/uk/` → `/en/`). Reviewers get
 a deploy-preview link and change the code themselves.
@@ -76,7 +82,7 @@ a deploy-preview link and change the code themselves.
 | `messages` | All UI strings; typed by a shared `Messages` interface so a missing key fails `tsc` |
 | `templateUrl` | `/locales/<lang>/template.pdf` |
 | `fontUrl` | Font able to render this script (and Latin, for foreign names) |
-| `nameBox` | Name position/size for this template (`NAME_BOX` today) |
+| `nameStyle` | `box` (name position/size range for this template), `color`, `emboldening` |
 | `csv.headerWords`, `csv.fallbackEncoding` | Header detection; legacy Excel encoding (`windows-1251` / `windows-1255` / `windows-1252`) |
 | `normalizeName` policy | Which characters are rewritten (see below) |
 | `fileNameStrategy` | How zip entry names are built (see below) |
@@ -115,11 +121,16 @@ The PDF side and the UI side are separate problems.
 - Wrapping to two lines and the font-size fit work on the logical text (glyph widths do not depend on order), so the first logical words
   go on the top line whatever the direction; each line is then drawn run by run.
 - Name order is never swapped ("as entered").
-- The final font must contain Hebrew **and** Latin (and `׳`, `״`, `’`). **Checked on the bundled `WixMadeforDisplay-Bold.ttf`:
-  it has no Hebrew letters, no niqqud, no `׳`/`״`, and no `ʼ`.** It does have Latin-1/Latin Extended (`é ñ ü ø ł ß`),
-  Cyrillic (`і ї`), `'`, `’` and combining accents. Consequence: with the current font the `he` locale can only be exercised
-  with Latin/Cyrillic names; a Hebrew name cannot be drawn until a Hebrew-capable font is chosen (with the designers; OFL
-  candidates such as Heebo, Assistant, Rubik).
+- The font must contain Hebrew **and** Latin (and `׳`, `״`, `’`). `WixMadeforDisplay-Bold.ttf` (uk, en) has no Hebrew at all.
+  `WMHT-V7-Regular.otf` (he) has Hebrew letters, niqqud, `׳ ״ ־`, Latin with diacritics, Cyrillic, digits, `'` and `’`; it is
+  checked by a test that every name of the locale's example list can be drawn.
+- **CFF fonts (.otf) are embedded whole.** pdf-lib's subset of a CFF font prints the wrong glyphs (`!"#$%…`) in macOS Preview,
+  while pdf.js (the page preview) shows it correctly, so the bug is easy to miss. TrueType fonts are still subset. When embedded
+  whole, pdf-lib labels the OpenType file as TrueType (`CIDFontType2`/`FontFile2`); macOS Preview and pdf.js render it correctly,
+  other viewers and printers are unverified. A TrueType build of Wix Madefor Hebrew would avoid both points. Check PDFs outside pdf.js.
+- **Niqqud is not positioned correctly.** The font places vowel marks with GPOS offsets; fontkit computes them, but pdf-lib draws
+  glyphs by advance width only, so marks land beside their letter. Names without niqqud (the usual case in class lists) are fine.
+  Open item.
 - Before generating, check glyph coverage per name: a glyph the font lacks is printed as an empty box, silently. Names that cannot be
   drawn are not printed. If there are any, a dialog (native `<dialog>`, Escape or "back" cancel) lists each such name with the characters
   that are missing and offers two choices: **go back to editing the list** (the default), or **create certificates for the remaining
@@ -173,15 +184,23 @@ Compatibility: JSZip sets the zip UTF-8 flag for non-ASCII names. Windows 10+ Ex
 tools may not. **Manual check on Windows and macOS is mandatory before `he` becomes `ready`.** If a platform garbles names, fall
 back to Unicode-path extra fields or to numbered ASCII for that platform.
 
-## Template calibration (deferred)
+## Template calibration
 
-Each template needs its own `nameBox` (centre, max width, baseline, sizes), measured the way v1 did (screenshot, then visual
-check against rendered output). The new designs do not exist yet, including the redesigned Ukrainian one, so:
-- every locale (`uk`, `en`, `he`) points at its own `public/locales/<lang>/template.pdf`, currently a **copy of the existing template**
-  with the existing `nameBox`;
-- a future task (plan, Task 13) replaces those copies with the final PDFs in the same paths, re-measures `nameBox` for each
-  language, and archives the old template under `assets/`;
-- that task is what moves `en`/`he` from `draft` to `ready`, and it also re-calibrates `uk`.
+Each template has its own `nameStyle.box` (centre, max width, baselines, size range) in that template's points. How it is measured:
+1. render the template and find the name line and the label above it (pixel scan of a high-resolution render);
+2. from the font's metrics, put the baseline so descenders clear the line by about 4 pt and the tallest letters (accented
+   capitals) stay below the label, for one line at `maxSize` and for two lines at `twoLineMaxSize`;
+3. `maxWidth` ≈ 96 % of the line (as on the 2025 template);
+4. render a short, a long (one line, shrunk), a very long (two lines), a mixed Hebrew/Latin and a Latin/Cyrillic name with
+   descenders, and look at them.
+
+| Locale | Template | Line | Box |
+|---|---|---|---|
+| `uk`, `en` | 2025 Ukrainian, 842 × 595 | y 337, x 151–691 | centre 421, width 520, baseline 350, 36–20 pt, two lines 26 pt from 346 |
+| `he` | 2026 Hebrew, 1212.48 × 856.8 | y 437, x 394.5–818; label from y 495 | centre 606.25, width 408, baseline 450, 36–20 pt, two lines 22 pt from 447; colour `#116DFF`; synthetic bold 0.025 em |
+
+A test checks that every box lies inside its template and that every template has A4-landscape proportions. Still to do (plan,
+Task 13): the final `uk` (redesign) and `en` templates, their boxes, and moving the 2025 template to `assets/` when it is replaced.
 
 ## Out of scope
 
@@ -190,6 +209,8 @@ design, any server-side processing.
 
 ## Open items
 
-- Font choice for all locales; Hebrew needs a Hebrew-capable font (current font has none).
-- Final templates for `uk` (redesign), `en`, `he`, and calibration.
+- Final templates for `uk` (redesign) and `en`, and their calibration; their fonts (Hebrew is settled).
+- Niqqud positioning in the PDF (GPOS mark offsets are not applied by pdf-lib).
+- A TrueType (.ttf) build of Wix Madefor Hebrew, ideally also Bold: no whole-font embedding, standard font labelling, no synthetic bold.
+- The English UI names "Hour of AI"; which initiative the English page is for is still to be confirmed.
 - UI design (will replace markup and CSS only).

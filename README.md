@@ -17,8 +17,11 @@ The language is chosen by the code in the URL: `/uk/`, `/en/`, `/he/`. There is 
 | `he` | Hebrew (right to left) | draft |
 | `ar` | Arabic | not approved; may be added later |
 
-**Draft** means there is no final certificate template yet (the current one is a copy of the Ukrainian template). Drafts are
-served by `npm run dev` and on Netlify deploy previews, never on the production site.
+**Draft** means not ready for the live site yet: the final template, its calibration, reviewed texts and the zip check are not
+all in place (`he` has its final template; `en` still uses a copy of the Ukrainian one). Drafts are served by `npm run dev` and on
+Netlify deploy previews, never on the production site.
+
+The Hebrew page is for the Israeli initiative [Hour of Vibe Code](https://hourofvibecode.co.il) ("שעת הוויב קוד").
 
 ### Which language a visitor gets
 
@@ -80,12 +83,13 @@ Details and the reasons behind decisions are in
    policy, the zip file-name strategy, and **every message**. Messages that depend on a number need all the plural forms of the
    language (a test checks this against `Intl.PluralRules`). Start with `status: 'draft'`.
 2. **Register it** in `src/locales/index.ts`.
-3. **Assets** in `public/locales/<code>/`: `template.pdf` (A4 landscape, 842 × 595 pt, the name area left empty) and
+3. **Assets** in `public/locales/<code>/`: `template.pdf` (A4-landscape proportions, any size; the name area left empty) and
    `example.csv` (UTF-8 with BOM, a header row, names the font can draw).
 4. **Font.** The certificate font must contain every letter of the language **and** Latin letters (foreign names), plus the
    apostrophe `’`. Check with `splitByCoverage` (`src/glyphs.ts`) or just try the example. Use a font under the SIL OFL, add it
-   to `public/fonts/` with its licence, and point `fontUrl` at it. A right-to-left language needs no extra code: the page
-   mirrors and names are reordered automatically.
+   to `public/fonts/` with its licence, and point `fontUrl` at it. A test checks that the font draws every name of the
+   example list. If the font has only one weight, `nameStyle.emboldening` gives a synthetic bold. A right-to-left language
+   needs no extra code: the page mirrors and names are reordered automatically.
 5. **Aliases.** If the language has a legacy or neighbouring code that should lead to it, add it to `ALIASES` in
    `src/detect-locale.ts`.
 6. **Tests.** Add the example's expected names to `EXPECTED` in `tests/example-csv.test.ts`, then run `npm test`.
@@ -96,9 +100,10 @@ Details and the reasons behind decisions are in
 
 ## Where the name goes on the certificate
 
-`NAME_BOX` in `src/layout.ts` (PDF points, origin bottom-left, page 842 × 595):
+Each locale has a `nameStyle`: `box` (PDF points of that template, origin bottom-left), `color` (sRGB 0–1, take it from the
+template) and `emboldening` (synthetic bold as a fraction of the font size; 0 for a bold font).
 
-| Field | Meaning |
+| `box` field | Meaning |
 |---|---|
 | `centerX` | horizontal centre of the name |
 | `maxWidth` | widest a line may be |
@@ -106,9 +111,11 @@ Details and the reasons behind decisions are in
 | `maxSize`, `minSize` | font size range for one line (the size shrinks to fit) |
 | `twoLineMaxSize`, `twoLineBottomY`, `lineHeight` | the two-line layout used when one line would be smaller than `minSize` |
 
-It is **one shared box for now**. Every language has its own template in the end, so each will get its own box when the final
-templates arrive (plan, task 13). To calibrate: measure the name line on the template, set the values, create certificates for a
-short name, a very long one (two lines) and a name with accents, and look at the PDF.
+`uk` and `en` use the 2025 Ukrainian template's style (`NAME_BOX` in `src/layout.ts`); `he` has its own in `src/locales/he.ts`.
+To calibrate a new template: find the name line and the label above it, place the baseline so descenders clear the line and the
+tallest letters stay under the label (the font's metrics tell you how far they reach), then create certificates for a short name, a
+very long one (two lines), a mixed one and one with accents, and look at the PDF. The spec's "Template calibration" has the
+measurements of each template. A test checks that each box lies inside its template.
 
 ## Deployment
 
@@ -118,8 +125,12 @@ languages only on previews. Production never shows them.
 
 ## Known limits
 
-- The font (Wix Madefor Display Bold) has **no Hebrew**. A Hebrew name cannot be printed until a Hebrew-capable font is chosen;
-  the page then lists such names in a dialog and offers to create certificates for the rest.
+- `uk` and `en` print with Wix Madefor Display Bold, which has **no Hebrew**; there a Hebrew name is listed in a dialog that
+  offers to create certificates for the rest. This is intended: Israel has its own initiative and page (`/he/`). `he` prints with Wix Madefor Hebrew, which covers Hebrew, Latin and Cyrillic.
+- **Niqqud** (Hebrew vowel marks) is not positioned correctly in the PDF yet: pdf-lib ignores the font's mark positioning.
+- The Hebrew font is an `.otf` (CFF outlines). pdf-lib cannot subset such fonts correctly, so it is embedded whole; prefer `.ttf`
+  fonts. Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
+  Preview or Acrobat.
 - The English and Hebrew texts are a first draft and need a native speaker's review.
-- Final templates, fonts and name positions are still to come (plan, task 13). The UI is not final either; texts live in the locale
+- Final templates for `uk` (redesign) and `en` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
   files, so a new design only replaces `index.html` and `src/styles.css`.

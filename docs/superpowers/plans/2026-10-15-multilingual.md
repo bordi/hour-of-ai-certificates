@@ -24,7 +24,7 @@ Branch: `feat/i18n`. Tasks 2–8 must leave `/uk/` fully working with green test
 | `src/bidi.ts` | Logical → visual text for RTL (Task 10) |
 | `src/filenames.ts` | Strategies per locale (Task 7) |
 | `src/csv.ts`, `src/names.ts` | Take header words, fallback encoding, normalisation policy from the locale |
-| `src/layout.ts`, `src/certificate.ts` | Take `nameBox` and font per locale |
+| `src/layout.ts`, `src/certificate.ts` | Take the locale's name style (box, colour, synthetic bold) and font |
 | `public/locales/<lang>/` | `template.pdf`, `example.csv` |
 | `netlify.toml` | Catch-all rewrite `/*` → `/index.html` (200) |
 | `README.md` | Project overview, how to add a language |
@@ -154,15 +154,26 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] It describes what exists: the name position is **one shared `NAME_BOX`** in `src/layout.ts` for now (the spec's per-locale box arrives with Task 13), and production falls back to Ukrainian while English is a draft.
 - [x] Commit: `docs: add readme with instructions for adding a language`
 
-### Task 13 (blocked): Place final templates, choose fonts, calibrate, go live
+### Task 13: Place final templates, choose fonts, calibrate, go live
 
-Blocked until the final designs exist for `uk` (redesign), `en` and `he`, and until fonts are chosen.
+Partly blocked: the final designs exist only for `he` so far.
 
-- [ ] Put the final PDFs at `public/locales/<lang>/template.pdf` for each locale, replacing the temporary copies; move the old template to `assets/` as an archive (`template-2025.pdf` already lives there).
-- [ ] Choose the font(s) with the designers; for `he` it must contain Hebrew, Latin, `׳`, `״` and niqqud. Add font files and licences under `public/fonts/`; point each locale's `fontUrl` at it.
-- [ ] Measure and set `nameBox` per locale (`uk` included, since its design changes), as in v1: measure on the template, then compare against rendered output.
-- [ ] Rendering tests with real Hebrew glyphs (the Hebrew example CSV already exists).
-- [ ] Check output on long names, two-line names, Hebrew with niqqud, mixed scripts.
-- [ ] **Zip check on Windows and macOS** (Hebrew and Ukrainian names): names correct in Explorer/Finder/Archive Utility.
-- [ ] Native-speaker review of UI strings.
+**Hebrew (done 2026-10-21)**
+- [x] Final `he` template (1212.48 × 856.8 pt, A4 proportions) and font `WMHT-V7-Regular.otf` (Wix Madefor Hebrew, SIL OFL; the existing `public/fonts/OFL.txt` is the same project's licence) committed as provided.
+- [x] Per-locale `nameStyle` replaces the single `NAME_BOX`: `box`, `color`, `emboldening`. `uk` and `en` share the 2025 Ukrainian style; `he` is calibrated for its template (values and method in the spec, "Template calibration"), colour `#116DFF` from the template, synthetic bold 0.025 em because only Regular exists (fill and outline, `2 Tr`).
+- [x] Tests: every box lies inside its template, every template has A4-landscape proportions, every locale's font draws all names of its example list, Hebrew certificates render with real glyphs, the synthetic bold is applied only where asked.
+- [x] Hebrew texts name the Israeli initiative, "שעת הוויב קוד" (Hour of Vibe Code, hourofvibecode.co.il), and follow its style: plural, paired or neutral gender forms.
+- Checked by eye: short, mixed Hebrew/Latin, digits and brackets, geresh, Latin with accents, Cyrillic with descenders, a long name (one line, shrunk) and a very long one (two lines).
+- Found when the user opened a zip in macOS Preview: with the `.otf` font every name printed as `!"#$%…`. pdf-lib's subset of a CFF font is broken outside pdf.js, and my checks had used pdf.js only. Fixed by embedding CFF fonts whole (`canSubset`, +≈45 KB per PDF; TrueType is still subset); checked with macOS's own renderer (`sips`, `qlmanage`), and a test rejects the broken subset form (`CIDFontType0C`). From now on PDFs are also checked with the macOS renderer, not only pdf.js.
+- Decided with the user: on `uk`/`en` Hebrew names stay unsupported (skip dialog), no fallback font; Israel has its own initiative and page.
+- Confirmed by the user: the Hebrew zip opens correctly in macOS Preview after the fix.
+- Found: **niqqud is misplaced** (pdf-lib ignores the font's GPOS mark offsets). Names without niqqud are fine. Open; options to be weighed separately.
+
+**Still to do**
+- [ ] Final `uk` (redesign) and `en` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
+- [ ] Decide whether and how to position niqqud.
+- [ ] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): the `.otf` is embedded whole under a TrueType label, which only macOS Preview and pdf.js are verified to accept.
+- [ ] Which initiative the English page is for (it says "Hour of AI").
+- [ ] **Zip check on Windows and macOS** (Hebrew, accented and Ukrainian names): names correct in Explorer/Finder/Archive Utility.
+- [ ] Native-speaker review of the Hebrew and English UI strings.
 - [ ] Flip `status` to `ready`. Commit per locale: `feat: enable <lang> locale`
