@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Overwritten at runtime from the active locale. -->
     <title>Сертифікати «Година ШІ»</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232E51F4'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,44 +12,57 @@
   </head>
   <body>
     <header>
-      <h1>Сертифікати «Година ШІ»</h1>
-      <p class="lead">Вставте список учнів — по одному імені в рядку — і отримайте іменні сертифікати для всього класу.</p>
+      <h1 data-i18n="heading"></h1>
+      <p class="lead" data-i18n="lead"></p>
     </header>
 
     <main class="layout">
-      <section class="preview" aria-label="Попередній перегляд">
+      <section class="preview" data-i18n-aria-label="previewLabel">
         <canvas id="preview-canvas"></canvas>
         <nav class="pager" id="pager" hidden>
-          <button type="button" id="prev" aria-label="Попередній">◀</button>
-          <span id="page-label">1 / 1</span>
-          <button type="button" id="next" aria-label="Наступний">▶</button>
+          <button type="button" id="prev" data-i18n-aria-label="prevLabel"><span class="arrow" aria-hidden="true">◀</span></button>
+          <span id="page-label" dir="ltr">1 / 1</span>
+          <button type="button" id="next" data-i18n-aria-label="nextLabel"><span class="arrow" aria-hidden="true">▶</span></button>
         </nav>
       </section>
 
       <section class="input">
-        <label for="names">Список учнів</label>
-        <textarea id="names" spellcheck="false" placeholder="Шевченко Тарас&#10;Українка Леся&#10;Франко Іван"></textarea>
+        <label for="names" data-i18n="namesLabel"></label>
+        <textarea id="names" dir="auto" spellcheck="false" data-i18n-placeholder="namesPlaceholder"></textarea>
         <div class="input-row">
           <label class="file-button">
-            Завантажити CSV / TXT
+            <span data-i18n="uploadButton"></span>
             <input type="file" id="file" accept=".csv,.txt,text/csv,text/plain" hidden />
           </label>
-          <span id="count">Учнів: 0</span>
+          <span id="count"></span>
         </div>
         <p class="hint">
-          Файл CSV або TXT: один учень у рядку. Якщо колонок кілька (напр. «Прізвище;Ім’я»), їх буде об’єднано через пробіл.
-          Рядок заголовка пропускається. <a href="/examples/spysok-uchniv.csv" download>Завантажити приклад</a>
+          <span data-i18n="hintCsv"></span>
+          <a data-example-csv download data-i18n="exampleLink"></a>
         </p>
-        <p class="hint">Імена друкуються саме так, як ви їх ввели. Дані не залишають ваш комп’ютер.</p>
+        <p class="hint" data-i18n="hintPrivacy"></p>
       </section>
     </main>
 
     <footer class="actions">
-      <button type="button" id="generate" class="primary">Сформувати сертифікати</button>
-      <button type="button" id="download" disabled>Завантажити (.zip)</button>
-      <button type="button" id="print" disabled>Друкувати</button>
+      <button type="button" id="generate" class="primary" data-i18n="generate"></button>
+      <button type="button" id="download" data-i18n="download" disabled></button>
+      <button type="button" id="print" data-i18n="print" disabled></button>
       <span id="status" role="status" aria-live="polite"></span>
     </footer>
+
+    <dialog id="skip-dialog" aria-labelledby="skip-title">
+      <form method="dialog">
+        <h2 id="skip-title" data-i18n="skipTitle"></h2>
+        <p id="skip-intro"></p>
+        <ul id="skip-list"></ul>
+        <p id="skip-rest"></p>
+        <div class="dialog-actions">
+          <button type="submit" value="back" id="skip-back" data-i18n="skipBack"></button>
+          <button type="submit" value="continue" id="skip-continue" class="primary"></button>
+        </div>
+      </form>
+    </dialog>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
