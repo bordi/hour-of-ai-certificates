@@ -3,7 +3,7 @@ import { he } from './he';
 import { uk } from './uk';
 import type { Locale } from './types';
 
-export type { CsvRules, Direction, FileNameStrategy, Locale, LocaleStatus, Messages, NamePolicy, Plural } from './types';
+export type { CsvRules, Direction, FileNameStrategy, Locale, LocaleStatus, Messages, NamePolicy, NameStyle, Plural } from './types';
 
 export const LOCALES = { uk, en, he } satisfies Record<string, Locale>;
 

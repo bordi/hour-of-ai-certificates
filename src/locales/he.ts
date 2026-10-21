@@ -1,4 +1,5 @@
 import type { Locale } from './types';
+import { UK_TEMPLATE_NAME_STYLE } from './uk';
 
 // Draft wording: needs a review by a native speaker before this locale becomes `ready`.
 export const he: Locale = {
@@ -15,6 +16,7 @@ export const he: Locale = {
   // ' and the geresh ׳ are ordinary characters in Hebrew names (ג'ורג'); only ʼ is rewritten.
   name: { apostrophes: 'ʼ' },
   fileNameStrategy: 'keep',
+  nameStyle: UK_TEMPLATE_NAME_STYLE,
   messages: {
     title: 'תעודות "שעה של בינה מלאכותית"',
     heading: 'תעודות "שעה של בינה מלאכותית"',

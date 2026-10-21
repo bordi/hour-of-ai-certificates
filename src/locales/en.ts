@@ -1,4 +1,5 @@
 import type { Locale } from './types';
+import { UK_TEMPLATE_NAME_STYLE } from './uk';
 
 export const en: Locale = {
   code: 'en',
@@ -14,6 +15,8 @@ export const en: Locale = {
   // The font draws ' itself; only the modifier letter ʼ is missing from it.
   name: { apostrophes: 'ʼ' },
   fileNameStrategy: 'keep',
+  // Same template as uk until the English one arrives.
+  nameStyle: UK_TEMPLATE_NAME_STYLE,
   messages: {
     title: 'Hour of AI certificates',
     heading: 'Hour of AI certificates',

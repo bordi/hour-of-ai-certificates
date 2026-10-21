@@ -1,4 +1,5 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { PDFDocument } from 'pdf-lib';
 import { describe, it, expect } from 'vitest';
 import { LOCALES, filterLocales, getLocale, type Plural } from '../src/locales';
 
@@ -44,6 +45,26 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
       expect(url).toMatch(/^\//);
       expect(existsSync(`public${url}`), url).toBe(true);
     }
+  });
+
+  it('puts the name inside its own template, which has the proportions of the preview frame (A4 landscape)', async () => {
+    const page = (await PDFDocument.load(readFileSync(`public${locale.templateUrl}`))).getPage(0);
+    const { width, height } = page.getSize();
+    expect(width / height).toBeCloseTo(842 / 595, 2);
+    const { box } = locale.nameStyle;
+    expect(box.centerX - box.maxWidth / 2).toBeGreaterThan(0);
+    expect(box.centerX + box.maxWidth / 2).toBeLessThan(width);
+    expect(box.baselineY).toBeGreaterThan(0);
+    expect(box.twoLineBottomY + box.twoLineMaxSize * box.lineHeight + box.twoLineMaxSize).toBeLessThan(height);
+    expect(box.minSize).toBeLessThanOrEqual(box.maxSize);
+    expect(box.twoLineMaxSize).toBeLessThanOrEqual(box.maxSize);
+  });
+
+  it('has a valid name colour and emboldening', () => {
+    const { color, emboldening } = locale.nameStyle;
+    for (const c of color) expect(c >= 0 && c <= 1, String(c)).toBe(true);
+    expect(emboldening).toBeGreaterThanOrEqual(0);
+    expect(emboldening).toBeLessThan(0.1);
   });
 
   it('has usable csv rules', () => {

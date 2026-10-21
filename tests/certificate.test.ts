@@ -8,6 +8,7 @@ const assets: Assets = {
   template: new Uint8Array(readFileSync(`public${LOCALES.uk.templateUrl}`)),
   font: new Uint8Array(readFileSync(`public${LOCALES.uk.fontUrl}`)),
   dir: LOCALES.uk.dir,
+  name: LOCALES.uk.nameStyle,
 };
 
 async function pageTexts(bytes: Uint8Array): Promise<string[]> {

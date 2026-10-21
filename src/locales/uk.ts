@@ -1,4 +1,12 @@
-import type { Locale } from './types';
+import { NAME_BOX } from '../layout';
+import type { Locale, NameStyle } from './types';
+
+/** The 2025 Ukrainian template: its name line and its blue. */
+export const UK_TEMPLATE_NAME_STYLE: NameStyle = {
+  box: NAME_BOX,
+  color: [0.180392, 0.317647, 0.956863],
+  emboldening: 0,
+};
 
 export const uk: Locale = {
   code: 'uk',
@@ -13,6 +21,7 @@ export const uk: Locale = {
   },
   name: { apostrophes: "'ʼ`" },
   fileNameStrategy: 'kmu-2010',
+  nameStyle: UK_TEMPLATE_NAME_STYLE,
   messages: {
     title: 'Сертифікати «Година ШІ»',
     heading: 'Сертифікати «Година ШІ»',

@@ -5,8 +5,20 @@ export interface NameLayout {
   lines: { text: string; y: number }[];
 }
 
-/** PDF points, origin bottom-left. Page is 842×595. Calibrated in Task 9. */
-export const NAME_BOX = {
+/** Where and how big the name may be, in PDF points of one template (origin bottom-left). */
+export interface NameBox {
+  centerX: number;
+  maxWidth: number;
+  baselineY: number;
+  maxSize: number;
+  minSize: number;
+  twoLineMaxSize: number;
+  twoLineBottomY: number;
+  lineHeight: number;
+}
+
+/** The 2025 Ukrainian template (842 × 595). Each locale picks its box in its own file. */
+export const NAME_BOX: NameBox = {
   centerX: 421,
   maxWidth: 520,
   baselineY: 350,

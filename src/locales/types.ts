@@ -1,3 +1,5 @@
+import type { NameBox } from '../layout';
+
 export type Direction = 'ltr' | 'rtl';
 
 /** `draft` locales are only reachable in dev and on deploy previews. */
@@ -71,6 +73,16 @@ export interface NamePolicy {
   apostrophes: string;
 }
 
+/** How the name is printed on this locale's template. */
+export interface NameStyle {
+  /** Position and size range, in PDF points of the template. */
+  box: NameBox;
+  /** sRGB components, 0–1. */
+  color: [number, number, number];
+  /** Synthetic bold for fonts without a bold weight: outline stroke as a fraction of the font size (0 = as is). */
+  emboldening: number;
+}
+
 export interface Locale {
   code: string;
   dir: Direction;
@@ -83,4 +95,5 @@ export interface Locale {
   csv: CsvRules;
   name: NamePolicy;
   fileNameStrategy: FileNameStrategy;
+  nameStyle: NameStyle;
 }
