@@ -1,5 +1,4 @@
 import type { Locale } from './types';
-import { UK_TEMPLATE_NAME_STYLE } from './uk';
 
 // Draft wording: needs a review by a native speaker before this locale becomes `ready`.
 export const he: Locale = {
@@ -7,7 +6,8 @@ export const he: Locale = {
   dir: 'rtl',
   status: 'draft',
   templateUrl: '/locales/he/template.pdf',
-  fontUrl: '/fonts/WixMadeforDisplay-Bold.ttf',
+  // Wix Madefor Hebrew (Regular only): Hebrew, Latin, Cyrillic.
+  fontUrl: '/fonts/WMHT-V7-Regular.otf',
   exampleCsvUrl: '/locales/he/example.csv',
   csv: {
     headerWords: ['שם', 'שמות', 'פרטי', 'משפחה', 'תלמיד', 'תלמידים', 'כיתה', 'name', 'surname', 'student'],
@@ -16,7 +16,22 @@ export const he: Locale = {
   // ' and the geresh ׳ are ordinary characters in Hebrew names (ג'ורג'); only ʼ is rewritten.
   name: { apostrophes: 'ʼ' },
   fileNameStrategy: 'keep',
-  nameStyle: UK_TEMPLATE_NAME_STYLE,
+  // Template 2026 (1212.48 × 856.8 pt). The name line runs at y ≈ 437 from x 394.5 to 818; the label above it starts at
+  // y ≈ 495. Baselines keep descenders (ק ן, g y) about 4 pt above the line and the tallest marks below the label.
+  nameStyle: {
+    box: {
+      centerX: 606.25,
+      maxWidth: 408,
+      baselineY: 450,
+      maxSize: 36,
+      minSize: 20,
+      twoLineMaxSize: 22,
+      twoLineBottomY: 447,
+      lineHeight: 1.15,
+    },
+    color: [17 / 255, 109 / 255, 1], // #116DFF, the template's blue
+    emboldening: 0.025,
+  },
   messages: {
     title: 'תעודות "שעה של בינה מלאכותית"',
     heading: 'תעודות "שעה של בינה מלאכותית"',

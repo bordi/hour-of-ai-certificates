@@ -34,6 +34,16 @@ export function createEngineProbe(fontBytes: Uint8Array): (text: string) => bool
   return (text) => text !== '' && font.layout(text).direction === 'rtl';
 }
 
+/**
+ * pdf-lib's subsetting breaks fonts with CFF outlines (.otf, file signature "OTTO"): macOS Preview then draws the
+ * wrong glyphs (`!"#$%…` in place of the letters), while pdf.js happens to cope. Such fonts are embedded whole;
+ * TrueType fonts (.ttf) are subset as before. A TrueType build of the font avoids the problem altogether.
+ */
+export function canSubset(fontBytes: Uint8Array): boolean {
+  return String.fromCharCode(...fontBytes.subarray(0, 4)) !== 'OTTO';
+}
+
+const subsettable = new WeakMap<Uint8Array, boolean>();
 const probes = new WeakMap<Uint8Array, (text: string) => boolean>();
 function probeFor(fontBytes: Uint8Array): (text: string) => boolean {
   let probe = probes.get(fontBytes);
@@ -75,7 +85,9 @@ export async function renderCertificates(assets: Assets, names: string[]): Promi
   const template = await PDFDocument.load(assets.template);
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
-  const font = await doc.embedFont(assets.font, { subset: true });
+  let subset = subsettable.get(assets.font);
+  if (subset === undefined) subsettable.set(assets.font, (subset = canSubset(assets.font)));
+  const font = await doc.embedFont(assets.font, { subset });
   const pages = await doc.copyPages(template, names.map(() => 0));
   pages.forEach((page, i) => {
     doc.addPage(page);

@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { PDFDocument } from 'pdf-lib';
 import { describe, it, expect } from 'vitest';
 import { LOCALES, filterLocales, getLocale, type Plural } from '../src/locales';
+import { decodeText, parseCsvNames } from '../src/csv';
+import { createFontCoverage, splitByCoverage } from '../src/glyphs';
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 const forms = (value: string | Plural): string[] =>
@@ -58,6 +60,12 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
     expect(box.twoLineBottomY + box.twoLineMaxSize * box.lineHeight + box.twoLineMaxSize).toBeLessThan(height);
     expect(box.minSize).toBeLessThanOrEqual(box.maxSize);
     expect(box.twoLineMaxSize).toBeLessThanOrEqual(box.maxSize);
+  });
+
+  it('its font can draw every name of its example list', () => {
+    const hasGlyph = createFontCoverage(new Uint8Array(readFileSync(`public${locale.fontUrl}`)));
+    const text = decodeText(new Uint8Array(readFileSync(`public${locale.exampleCsvUrl}`)), locale.csv.fallbackEncoding);
+    expect(splitByCoverage(hasGlyph, parseCsvNames(text, locale.csv.headerWords, locale.name)).unsupported).toEqual([]);
   });
 
   it('has a valid name colour and emboldening', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { PDFDocument } from 'pdf-lib';
-import { createEngineProbe, renderCertificates, type Assets } from '../src/certificate';
+import { PDFDocument, PDFName } from 'pdf-lib';
+import { canSubset, createEngineProbe, renderCertificates, type Assets } from '../src/certificate';
 import { LOCALES } from '../src/locales';
 
 const assets: Assets = {
@@ -56,6 +56,51 @@ describe('renderCertificates', () => {
     const names = ['Ivan Smith', 'Тарас Шевченко', 'José Müller 2'];
     const texts = await pageTexts(await renderCertificates(rtl, names));
     names.forEach((n, i) => expect(texts[i]).toContain(n));
+  });
+});
+
+describe('renderCertificates for the Hebrew locale (real Hebrew glyphs)', () => {
+  const he = LOCALES.he;
+  const heAssets: Assets = {
+    template: new Uint8Array(readFileSync(`public${he.templateUrl}`)),
+    font: new Uint8Array(readFileSync(`public${he.fontUrl}`)),
+    dir: he.dir,
+    name: he.nameStyle,
+  };
+
+  it('draws Hebrew, mixed and Latin names on the Hebrew template, one page each', async () => {
+    const names = ['דניאל כהן', 'Ivan דני', 'José Müller'];
+    const bytes = await renderCertificates(heAssets, names);
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBe(3);
+    const { width, height } = doc.getPage(0).getSize();
+    expect([Math.round(width), Math.round(height)]).toEqual([1212, 857]);
+    const texts = await pageTexts(bytes);
+    for (const word of ['דניאל', 'כהן']) expect(texts[0]).toContain(word);
+    for (const word of ['Ivan', 'דני']) expect(texts[1]).toContain(word);
+    expect(texts[2]).toContain('José Müller');
+  });
+
+  it('embeds the CFF (.otf) font whole: a pdf-lib subset of it prints the wrong glyphs in macOS Preview', async () => {
+    expect(canSubset(heAssets.font)).toBe(false);
+    expect(canSubset(assets.font)).toBe(true); // TrueType (uk, en) is still subset
+    // The broken form is a subset CFF stream (FontFile3 /CIDFontType0C); it must not appear.
+    const doc = await PDFDocument.load(await renderCertificates(heAssets, ['דני', 'Тарас']));
+    const subtypes = doc.context
+      .enumerateIndirectObjects()
+      .map(([, obj]) => ('dict' in obj ? String((obj as { dict: { get(n: unknown): unknown } }).dict.get(PDFName.of('Subtype'))) : ''));
+    expect(subtypes).not.toContain('/CIDFontType0C');
+  });
+
+  it('uses the synthetic bold (fill and outline) only where the locale asks for it', async () => {
+    const renderModes = async (assets: Assets) => {
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      const doc = await pdfjs.getDocument({ data: (await renderCertificates(assets, ['דני'])).slice() }).promise;
+      const { fnArray, argsArray } = await (await doc.getPage(1)).getOperatorList();
+      return fnArray.flatMap((fn, i) => (fn === pdfjs.OPS.setTextRenderingMode ? [argsArray[i][0]] : []));
+    };
+    expect(await renderModes(heAssets)).toContain(2); // 2 = fill and outline
+    expect(await renderModes({ ...heAssets, name: { ...he.nameStyle, emboldening: 0 } })).not.toContain(2);
   });
 });
 

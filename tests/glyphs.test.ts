@@ -39,7 +39,7 @@ describe('splitByCoverage', () => {
   });
 });
 
-describe('createFontCoverage with the bundled font', () => {
+describe('createFontCoverage with the uk/en font (Wix Madefor Display Bold)', () => {
   const hasGlyph = createFontCoverage(new Uint8Array(readFileSync(`public${LOCALES.uk.fontUrl}`)));
   const unsupportedIn = (names: string[]) => splitByCoverage(hasGlyph, names).unsupported;
 
@@ -47,7 +47,7 @@ describe('createFontCoverage with the bundled font', () => {
     expect(unsupportedIn([name])).toEqual([]);
   });
 
-  it('cannot draw Hebrew (this is why Hebrew names are skipped until a Hebrew font is chosen)', () => {
+  it('cannot draw Hebrew (Hebrew names are skipped on uk/en pages; he has its own font)', () => {
     expect(unsupportedIn(['דוד כהן'])).toEqual([{ name: 'דוד כהן', chars: ['ד', 'ו', 'כ', 'ה', 'ן'] }]);
   });
 
