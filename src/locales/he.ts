@@ -1,5 +1,7 @@
 import type { Locale } from './types';
 
+// The Israeli initiative is Hour of Vibe Code, "שעת הוויב קוד" (hourofvibecode.co.il, Code.org and Wix); its site
+// speaks in the plural and pairs gender forms, so these texts do too or stay neutral.
 // Draft wording: needs a review by a native speaker before this locale becomes `ready`.
 export const he: Locale = {
   code: 'he',
@@ -33,18 +35,18 @@ export const he: Locale = {
     emboldening: 0.025,
   },
   messages: {
-    title: 'תעודות "שעה של בינה מלאכותית"',
-    heading: 'תעודות "שעה של בינה מלאכותית"',
-    lead: 'הדביקו רשימת תלמידים, שם אחד בכל שורה, וקבלו תעודה אישית לכל תלמיד בכיתה.',
+    title: 'תעודות שעת הוויב קוד',
+    heading: 'תעודות שעת הוויב קוד',
+    lead: 'הדביקו את רשימת התלמידים והתלמידות, שם אחד בכל שורה, וקבלו תעודה אישית לכל אחד ואחת.',
     previewLabel: 'תצוגה מקדימה',
     prevLabel: 'הקודם',
     nextLabel: 'הבא',
-    namesLabel: 'רשימת תלמידים',
+    namesLabel: 'רשימת התלמידים והתלמידות',
     namesPlaceholder: 'דני כהן\nשרה לוי\nיוסי מזרחי',
     uploadButton: 'העלאת קובץ CSV / TXT',
-    studentCount: 'תלמידים: {count}',
+    studentCount: 'שמות ברשימה: {count}',
     hintCsv:
-      'קובץ CSV או TXT, תלמיד אחד בכל שורה. אם יש כמה עמודות (למשל "שם פרטי;שם משפחה"), הן יחוברו ברווח. שורת כותרת תדולג.',
+      'קובץ CSV או TXT, שם אחד בכל שורה. אם יש כמה עמודות (למשל "שם פרטי;שם משפחה"), הן יחוברו ברווח. שורת כותרת תדולג.',
     exampleLink: 'הורדת קובץ לדוגמה',
     hintPrivacy: 'השמות מודפסים בדיוק כפי שהוקלדו. הנתונים אינם יוצאים מהמחשב שלכם.',
     generate: 'יצירת תעודות',
