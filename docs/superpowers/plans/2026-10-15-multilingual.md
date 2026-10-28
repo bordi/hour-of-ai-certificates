@@ -169,10 +169,17 @@ Partly blocked: the final designs exist only for `he` so far.
 - Confirmed by the user: the Hebrew zip opens correctly in macOS Preview after the fix.
 - Found: **niqqud is misplaced** (pdf-lib ignores the font's GPOS mark offsets). Names without niqqud are fine. Open; options to be weighed separately.
 
+**Hebrew fonts in TrueType (done 2026-10-28)**
+- [x] `WMHTV8-Regular.ttf` and `WMHTV8-SemiBold.ttf` (Wix Madefor Hebrew, SIL OFL) replace `WMHT-V7-Regular.otf`. Same metrics, so the calibration holds.
+- [x] The certificate name prints in SemiBold, synthetic bold off (`emboldening: 0`); the font is subset again (≈272 KB instead of ≈315 KB per PDF). Checked with the macOS renderer: Hebrew, Latin with accents, Cyrillic, geresh, a long name.
+- [x] Web UI: Hebrew characters in Wix Madefor Hebrew 400/600 (`@font-face` with a Hebrew `unicode-range`) instead of the system fallback (Lucida Grande in Chrome on macOS). Checked in Chrome: `/he/` loads both files, `/uk/` none.
+- [x] Commits: `feat: print hebrew names with Wix Madefor Hebrew SemiBold`, `feat: show hebrew interface text in Wix Madefor Hebrew`
+
 **Still to do**
 - [ ] Final `uk` (redesign) and `en` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
 - [ ] Decide whether and how to position niqqud.
-- [ ] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): the `.otf` is embedded whole under a TrueType label, which only macOS Preview and pdf.js are verified to accept.
+- [x] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): received Regular and SemiBold (see above).
+- [ ] Check a Hebrew PDF in Acrobat and on a printer.
 - [ ] Which initiative the English page is for (it says "Hour of AI").
 - [ ] **Zip check on Windows and macOS** (Hebrew, accented and Ukrainian names): names correct in Explorer/Finder/Archive Utility.
 - [ ] Native-speaker review of the Hebrew and English UI strings.

@@ -28,7 +28,7 @@ replaced, so logic must not depend on markup beyond element ids.
 | Language selection UI | None. No dropdown or switcher; the language is chosen only by the code in the URL. |
 | Draft languages | `en`, `he` are reachable in dev and on Netlify deploy previews, not in production (see "Draft languages"). Netlify deploys `main` to the live site. |
 | Templates | One PDF per language, any size with A4-landscape proportions (the preview frame is 842:595). **`he` has its final template** (2026-10-21, 1212.48 × 856.8 pt). `uk` (redesign) and `en` still use a copy of the 2025 Ukrainian template. See "Template calibration". |
-| Fonts | `uk`, `en`: Wix Madefor Display Bold. `he`: Wix Madefor Hebrew (`WMHT-V7-Regular.otf`, SIL OFL, Hebrew + Latin + Cyrillic); only Regular exists, so the name is drawn with a synthetic bold (fill and outline). Web UI: Wix Madefor Text with the browser's fallback fonts. |
+| Fonts | `uk`, `en`: Wix Madefor Display Bold. `he`: Wix Madefor Hebrew SemiBold (`WMHTV8-SemiBold.ttf`, TrueType, SIL OFL, Hebrew + Latin + Cyrillic), no synthetic bold. Web UI: Wix Madefor Text (Google Fonts); Hebrew characters come from Wix Madefor Hebrew Regular and SemiBold (`WMHTV8-*.ttf`, `@font-face` limited to Hebrew by `unicode-range`, so other pages never load them; 700 falls back to 600). |
 | Hebrew names on `uk`/`en` | Not printed, by decision (2026-10-21): their font has no Hebrew, and Israel has its own initiative and page (`/he/`). The skip dialog names them; no fallback font. |
 | Name style | Per locale: position and size range (`box`), colour (the template's own blue) and synthetic-bold strength, all in the template's own points. |
 | Name on certificate | Printed exactly as entered (no reordering, no case changes). Locale-specific normalisation only where the font cannot render the character. Letters with diacritics (`é`, `ñ`, `ü`, `ø`, `ł`, …) are never stripped or replaced. |
@@ -122,12 +122,12 @@ The PDF side and the UI side are separate problems.
   go on the top line whatever the direction; each line is then drawn run by run.
 - Name order is never swapped ("as entered").
 - The font must contain Hebrew **and** Latin (and `׳`, `״`, `’`). `WixMadeforDisplay-Bold.ttf` (uk, en) has no Hebrew at all.
-  `WMHT-V7-Regular.otf` (he) has Hebrew letters, niqqud, `׳ ״ ־`, Latin with diacritics, Cyrillic, digits, `'` and `’`; it is
-  checked by a test that every name of the locale's example list can be drawn.
-- **CFF fonts (.otf) are embedded whole.** pdf-lib's subset of a CFF font prints the wrong glyphs (`!"#$%…`) in macOS Preview,
-  while pdf.js (the page preview) shows it correctly, so the bug is easy to miss. TrueType fonts are still subset. When embedded
-  whole, pdf-lib labels the OpenType file as TrueType (`CIDFontType2`/`FontFile2`); macOS Preview and pdf.js render it correctly,
-  other viewers and printers are unverified. A TrueType build of Wix Madefor Hebrew would avoid both points. Check PDFs outside pdf.js.
+  `WMHTV8-SemiBold.ttf` (he) has Hebrew letters, niqqud, `׳ ״ ־`, Latin with diacritics, Cyrillic, digits, `'` and `’` (not `ʼ`,
+  which the `he` name policy rewrites to `’`); it is checked by a test that every name of the locale's example list can be drawn.
+- **Use TrueType (.ttf) fonts.** pdf-lib's subset of a CFF font (.otf) prints the wrong glyphs (`!"#$%…`) in macOS Preview, while
+  pdf.js (the page preview) shows it correctly, so the bug is easy to miss. CFF fonts are therefore embedded whole (`canSubset`), and
+  pdf-lib then labels them as TrueType (`CIDFontType2`/`FontFile2`), which only macOS Preview and pdf.js are verified to accept. All
+  fonts in use are TrueType and subset (the first Hebrew font, `WMHT-V7-Regular.otf`, was replaced on 2026-10-28). Check PDFs outside pdf.js.
 - **Niqqud is not positioned correctly.** The font places vowel marks with GPOS offsets; fontkit computes them, but pdf-lib draws
   glyphs by advance width only, so marks land beside their letter. Names without niqqud (the usual case in class lists) are fine.
   Open item.
@@ -197,7 +197,7 @@ Each template has its own `nameStyle.box` (centre, max width, baselines, size ra
 | Locale | Template | Line | Box |
 |---|---|---|---|
 | `uk`, `en` | 2025 Ukrainian, 842 × 595 | y 337, x 151–691 | centre 421, width 520, baseline 350, 36–20 pt, two lines 26 pt from 346 |
-| `he` | 2026 Hebrew, 1212.48 × 856.8 | y 437, x 394.5–818; label from y 495 | centre 606.25, width 408, baseline 450, 36–20 pt, two lines 22 pt from 447; colour `#116DFF`; synthetic bold 0.025 em |
+| `he` | 2026 Hebrew, 1212.48 × 856.8 | y 437, x 394.5–818; label from y 495 | centre 606.25, width 408, baseline 450, 36–20 pt, two lines 22 pt from 447; colour `#116DFF`; SemiBold, no synthetic bold |
 
 A test checks that every box lies inside its template and that every template has A4-landscape proportions. Still to do (plan,
 Task 13): the final `uk` (redesign) and `en` templates, their boxes, and moving the 2025 template to `assets/` when it is replaced.

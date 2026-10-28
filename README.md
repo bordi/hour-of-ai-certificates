@@ -67,7 +67,7 @@ src/glyphs.ts, skip-dialog.ts   names the font cannot draw, and the dialog about
 src/filenames.ts, zip.ts   file names inside the .zip
 src/preview.ts             pdf.js preview
 public/locales/<code>/     template.pdf and example.csv of each language
-public/fonts/              certificate font and its licence
+public/fonts/              certificate fonts, the Hebrew UI font, and their licence
 docs/superpowers/          design specs and implementation plans
 ```
 
@@ -86,10 +86,11 @@ Details and the reasons behind decisions are in
 3. **Assets** in `public/locales/<code>/`: `template.pdf` (A4-landscape proportions, any size; the name area left empty) and
    `example.csv` (UTF-8 with BOM, a header row, names the font can draw).
 4. **Font.** The certificate font must contain every letter of the language **and** Latin letters (foreign names), plus the
-   apostrophe `’`. Check with `splitByCoverage` (`src/glyphs.ts`) or just try the example. Use a font under the SIL OFL, add it
-   to `public/fonts/` with its licence, and point `fontUrl` at it. A test checks that the font draws every name of the
-   example list. If the font has only one weight, `nameStyle.emboldening` gives a synthetic bold. A right-to-left language
-   needs no extra code: the page mirrors and names are reordered automatically.
+   apostrophe `’`. Check with `splitByCoverage` (`src/glyphs.ts`) or just try the example. Use a TrueType (`.ttf`) font under
+   the SIL OFL, add it to `public/fonts/` with its licence, and point `fontUrl` at it. A test checks that the font draws every name of the
+   example list. If the font has no bold weight, `nameStyle.emboldening` gives a synthetic bold. A right-to-left language
+   needs no extra code: the page mirrors and names are reordered automatically. If Wix Madefor Text (the UI font) lacks the
+   script, add an `@font-face` for it in `src/styles.css`, limited by `unicode-range`, as for Hebrew.
 5. **Aliases.** If the language has a legacy or neighbouring code that should lead to it, add it to `ALIASES` in
    `src/detect-locale.ts`.
 6. **Tests.** Add the example's expected names to `EXPECTED` in `tests/example-csv.test.ts`, then run `npm test`.
@@ -126,10 +127,10 @@ languages only on previews. Production never shows them.
 ## Known limits
 
 - `uk` and `en` print with Wix Madefor Display Bold, which has **no Hebrew**; there a Hebrew name is listed in a dialog that
-  offers to create certificates for the rest. This is intended: Israel has its own initiative and page (`/he/`). `he` prints with Wix Madefor Hebrew, which covers Hebrew, Latin and Cyrillic.
+  offers to create certificates for the rest. This is intended: Israel has its own initiative and page (`/he/`). `he` prints with Wix Madefor Hebrew SemiBold, which covers Hebrew, Latin and Cyrillic.
 - **Niqqud** (Hebrew vowel marks) is not positioned correctly in the PDF yet: pdf-lib ignores the font's mark positioning.
-- The Hebrew font is an `.otf` (CFF outlines). pdf-lib cannot subset such fonts correctly, so it is embedded whole; prefer `.ttf`
-  fonts. Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
+- pdf-lib cannot subset `.otf` (CFF) fonts correctly, so such a font would be embedded whole; all fonts in use are `.ttf`.
+  Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
   Preview or Acrobat.
 - The English and Hebrew texts are a first draft and need a native speaker's review.
 - Final templates for `uk` (redesign) and `en` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
