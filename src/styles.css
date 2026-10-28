@@ -1,10 +1,14 @@
+/* Wix Madefor Text has no Hebrew. Only Hebrew characters come from these files, so other pages never load them;
+   700 (headings) falls back to 600, the heaviest weight provided, not to a synthetic bold. */
+@font-face { font-family: 'Wix Madefor Hebrew'; src: url('/fonts/WMHTV8-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; unicode-range: U+0590-05FF, U+FB1D-FB4F; }
+@font-face { font-family: 'Wix Madefor Hebrew'; src: url('/fonts/WMHTV8-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; unicode-range: U+0590-05FF, U+FB1D-FB4F; }
 :root {
   --blue: #2e51f4;
   --ink: #16181d;
   --muted: #5d6270;
   --line: #d9dce3;
   --bg: #f5f6f9;
-  font-family: 'Wix Madefor Text', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Wix Madefor Text', 'Wix Madefor Hebrew', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--ink);
   background: var(--bg);
 }
