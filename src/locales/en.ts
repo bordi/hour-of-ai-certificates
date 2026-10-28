@@ -1,0 +1,75 @@
+import type { Locale } from './types';
+import { UK_TEMPLATE_NAME_STYLE } from './uk';
+
+export const en: Locale = {
+  code: 'en',
+  dir: 'ltr',
+  status: 'draft',
+  templateUrl: '/locales/en/template.pdf',
+  fontUrl: '/fonts/WixMadeforDisplay-Bold.ttf',
+  exampleCsvUrl: '/locales/en/example.csv',
+  csv: {
+    headerWords: ['name', 'names', 'surname', 'student', 'students', 'class', 'grade'],
+    fallbackEncoding: 'windows-1252',
+  },
+  // The font draws ' itself; only the modifier letter ʼ is missing from it.
+  name: { apostrophes: 'ʼ' },
+  fileNameStrategy: 'keep',
+  // Same template as uk until the English one arrives.
+  nameStyle: UK_TEMPLATE_NAME_STYLE,
+  messages: {
+    title: 'Hour of AI certificates',
+    heading: 'Hour of AI certificates',
+    lead: 'Paste your class list, one name per line, to get a personal certificate for every student.',
+    previewLabel: 'Preview',
+    prevLabel: 'Previous',
+    nextLabel: 'Next',
+    namesLabel: 'Student list',
+    namesPlaceholder: 'Anna Smith\nJosé García\nSeán O’Brien',
+    uploadButton: 'Upload CSV / TXT',
+    studentCount: 'Students: {count}',
+    hintCsv:
+      'CSV or TXT file, one student per row. If there are several columns (e.g. “First name;Last name”), they are joined with a space. A header row is skipped.',
+    exampleLink: 'Download an example',
+    hintPrivacy: 'Names are printed exactly as you type them. Your data never leaves your computer.',
+    generate: 'Create certificates',
+    download: 'Download (.zip)',
+    print: 'Print',
+
+    loadingTemplate: 'Loading the template…',
+    templateLoadFailed: 'Could not load the template. Please reload the page.',
+    addAtLeastOneName: 'Add at least one name.',
+    tooManyNames: 'Too many names: the maximum is {max}.',
+    generating: 'Creating certificates…',
+    skipTitle: 'Not every name can get a certificate',
+    skipIntro: {
+      one: 'A certificate cannot be created for {count} name: the certificate font is missing some of its characters.',
+      other: 'Certificates cannot be created for {count} names: the certificate font is missing some of their characters.',
+    },
+    skipReason: 'missing characters: {chars}',
+    skipRest: 'The remaining names ({count}) passed the check, so their certificates can be created.',
+    skipNoneValid: 'None of the names can be printed with this font. Go back and edit the list.',
+    skipBack: 'Back to editing',
+    skipContinue: 'Create for the rest ({count})',
+    generated: {
+      one: 'Done: {count} certificate.',
+      other: 'Done: {count} certificates.',
+    },
+    generatedSkipped: {
+      one: 'Done: {count} certificate. Names left out: {skipped}.',
+      other: 'Done: {count} certificates. Names left out: {skipped}.',
+    },
+    generateFailed: 'Could not create the certificates. Please try again.',
+    listChanged: 'The list changed — create the certificates again.',
+    noNamesInFile: 'No names were found in the file.',
+    importedFromFile: {
+      one: 'Loaded {count} name from “{file}”. Please check the list.',
+      other: 'Loaded {count} names from “{file}”. Please check the list.',
+    },
+    preparingArchive: 'Preparing the archive… {current} / {total}',
+    archiveDownloaded: 'Archive downloaded.',
+    archiveFailed: 'Could not create the archive.',
+    printOpened: 'The print file opened in a new tab — press Print (Ctrl/Cmd + P).',
+    popupBlocked: 'The browser blocked the new tab. Allow pop-ups for this site.',
+  },
+};

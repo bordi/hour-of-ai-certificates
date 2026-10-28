@@ -1,10 +1,14 @@
+/* Wix Madefor Text has no Hebrew. Only Hebrew characters come from these files, so other pages never load them;
+   700 (headings) falls back to 600, the heaviest weight provided, not to a synthetic bold. */
+@font-face { font-family: 'Wix Madefor Hebrew'; src: url('/fonts/WMHTV8-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; unicode-range: U+0590-05FF, U+FB1D-FB4F; }
+@font-face { font-family: 'Wix Madefor Hebrew'; src: url('/fonts/WMHTV8-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; unicode-range: U+0590-05FF, U+FB1D-FB4F; }
 :root {
   --blue: #2e51f4;
   --ink: #16181d;
   --muted: #5d6270;
   --line: #d9dce3;
   --bg: #f5f6f9;
-  font-family: 'Wix Madefor Text', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Wix Madefor Text', 'Wix Madefor Hebrew', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--ink);
   background: var(--bg);
 }
@@ -14,10 +18,14 @@ h1 { margin: 0 0 4px; font-size: 28px; color: var(--blue); }
 .lead { margin: 0 0 24px; color: var(--muted); }
 .layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
 .preview { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
-#preview-canvas { display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
+/* pdf.js draws text with fillText, which follows the canvas's CSS direction; on an rtl page every glyph
+   would be anchored at its right edge and overlap. The certificate is always laid out left to right. */
+#preview-canvas { direction: ltr; display: block; width: 100%; height: auto; aspect-ratio: 842 / 595; border-radius: 4px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.12); }
 [hidden] { display: none !important; }
 .pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; }
 .pager button { min-width: 44px; }
+/* Arrows are drawn for left-to-right; in rtl the previous page lies on the right, so mirror them. */
+:root[dir='rtl'] .arrow { display: inline-block; transform: scaleX(-1); }
 .input { display: flex; flex-direction: column; gap: 8px; }
 .input > label { font-weight: 600; }
 textarea { width: 100%; min-height: 360px; resize: vertical; padding: 12px; font: inherit; line-height: 1.5; border: 1px solid var(--line); border-radius: 8px; }
@@ -27,6 +35,11 @@ textarea { width: 100%; min-height: 360px; resize: vertical; padding: 12px; font
 button, .file-button { font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--blue); background: #fff; color: var(--blue); cursor: pointer; }
 button.primary { background: var(--blue); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
-.actions { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 12px; align-items: center; justify-content: center; padding: 16px; background: #fff; border-top: 1px solid var(--line); }
+.actions { position: fixed; inset-inline: 0; inset-block-end: 0; display: flex; gap: 12px; align-items: center; justify-content: center; padding: 16px; background: #fff; border-top: 1px solid var(--line); }
 #status { min-width: 240px; color: var(--muted); }
+dialog { width: min(560px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); }
+dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+dialog h2 { margin: 0 0 12px; font-size: 20px; }
+#skip-list { max-height: 40vh; overflow: auto; margin: 12px 0; padding-inline-start: 20px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 #status.error { color: #c62828; }
