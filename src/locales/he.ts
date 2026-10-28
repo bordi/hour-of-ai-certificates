@@ -8,8 +8,8 @@ export const he: Locale = {
   dir: 'rtl',
   status: 'draft',
   templateUrl: '/locales/he/template.pdf',
-  // Wix Madefor Hebrew (Regular only): Hebrew, Latin, Cyrillic.
-  fontUrl: '/fonts/WMHT-V7-Regular.otf',
+  // Wix Madefor Hebrew SemiBold (TrueType): Hebrew, Latin, Cyrillic.
+  fontUrl: '/fonts/WMHTV8-SemiBold.ttf',
   exampleCsvUrl: '/locales/he/example.csv',
   csv: {
     headerWords: ['שם', 'שמות', 'פרטי', 'משפחה', 'תלמיד', 'תלמידים', 'כיתה', 'name', 'surname', 'student'],
@@ -32,7 +32,7 @@ export const he: Locale = {
       lineHeight: 1.15,
     },
     color: [17 / 255, 109 / 255, 1], // #116DFF, the template's blue
-    emboldening: 0.025,
+    emboldening: 0,
   },
   messages: {
     title: 'תעודות שעת הוויב קוד',

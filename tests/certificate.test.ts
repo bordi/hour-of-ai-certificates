@@ -81,9 +81,10 @@ describe('renderCertificates for the Hebrew locale (real Hebrew glyphs)', () => 
     expect(texts[2]).toContain('José Müller');
   });
 
-  it('embeds the CFF (.otf) font whole: a pdf-lib subset of it prints the wrong glyphs in macOS Preview', async () => {
-    expect(canSubset(heAssets.font)).toBe(false);
-    expect(canSubset(assets.font)).toBe(true); // TrueType (uk, en) is still subset
+  it('subsets TrueType fonts, but not CFF (.otf) ones: a pdf-lib subset of those prints the wrong glyphs in macOS Preview', async () => {
+    expect(canSubset(heAssets.font)).toBe(true);
+    expect(canSubset(assets.font)).toBe(true);
+    expect(canSubset(new Uint8Array([0x4f, 0x54, 0x54, 0x4f, 0, 0]))).toBe(false); // "OTTO"
     // The broken form is a subset CFF stream (FontFile3 /CIDFontType0C); it must not appear.
     const doc = await PDFDocument.load(await renderCertificates(heAssets, ['דני', 'Тарас']));
     const subtypes = doc.context
@@ -99,8 +100,8 @@ describe('renderCertificates for the Hebrew locale (real Hebrew glyphs)', () => 
       const { fnArray, argsArray } = await (await doc.getPage(1)).getOperatorList();
       return fnArray.flatMap((fn, i) => (fn === pdfjs.OPS.setTextRenderingMode ? [argsArray[i][0]] : []));
     };
-    expect(await renderModes(heAssets)).toContain(2); // 2 = fill and outline
-    expect(await renderModes({ ...heAssets, name: { ...he.nameStyle, emboldening: 0 } })).not.toContain(2);
+    expect(await renderModes({ ...heAssets, name: { ...he.nameStyle, emboldening: 0.025 } })).toContain(2); // 2 = fill and outline
+    expect(await renderModes(heAssets)).not.toContain(2);
   });
 });
 
