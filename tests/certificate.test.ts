@@ -10,6 +10,7 @@ const assets: Assets = {
   font: new Uint8Array(readFileSync(`public${LOCALES.uk.fontUrl}`)),
   dir: LOCALES.uk.dir,
   name: LOCALES.uk.nameStyle,
+  title: LOCALES.uk.messages.pdfTitle,
 };
 
 async function pageTexts(bytes: Uint8Array): Promise<string[]> {
@@ -60,6 +61,17 @@ describe('renderCertificates', () => {
   });
 });
 
+describe('PDF title', () => {
+  it.each(Object.values(LOCALES))("is the $code locale's title, for one name and for many, never a student's name", async (locale) => {
+    const titled: Assets = { ...assets, title: locale.messages.pdfTitle };
+    for (const names of [['Тарас Шевченко'], ['Тарас Шевченко', 'Леся Українка']]) {
+      const title = (await PDFDocument.load(await renderCertificates(titled, names))).getTitle();
+      expect(title).toBe(locale.messages.pdfTitle);
+      expect(title).not.toContain('Тарас');
+    }
+  });
+});
+
 describe('renderCertificates for the Hebrew locale (real Hebrew glyphs)', () => {
   const he = LOCALES.he;
   const heAssets: Assets = {
@@ -67,6 +79,7 @@ describe('renderCertificates for the Hebrew locale (real Hebrew glyphs)', () => 
     font: new Uint8Array(readFileSync(`public${he.fontUrl}`)),
     dir: he.dir,
     name: he.nameStyle,
+    title: he.messages.pdfTitle,
   };
 
   it('draws Hebrew, mixed and Latin names on the Hebrew template, one page each', async () => {
@@ -151,6 +164,7 @@ describe('placeGlyphs (niqqud and other combining marks)', () => {
       font: new Uint8Array(readFileSync(`public${he.fontUrl}`)),
       dir: he.dir,
       name: he.nameStyle,
+      title: he.messages.pdfTitle,
     };
     const [marked, plain] = await pageTexts(await renderCertificates(heAssets, ['שָׁלוֹם כֹּהֵן', 'שלום כהן']));
     for (const ch of 'שלוםכהן') expect(marked).toContain(ch);

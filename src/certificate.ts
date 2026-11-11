@@ -23,6 +23,8 @@ export interface Assets {
   /** Paragraph direction of the locale; right-to-left names are reordered before drawing. */
   dir: Direction;
   name: NameStyle;
+  /** Document title shown by PDF viewers; the same for every file, never a student's name. */
+  title: string;
 }
 
 /**
@@ -138,6 +140,6 @@ export async function renderCertificates(assets: Assets, names: string[]): Promi
     doc.addPage(page);
     drawName(page, font, names[i], assets);
   });
-  doc.setTitle(names.length === 1 ? `Сертифікат — ${names[0]}` : 'Сертифікати — Година ШІ');
+  doc.setTitle(assets.title);
   return doc.save();
 }

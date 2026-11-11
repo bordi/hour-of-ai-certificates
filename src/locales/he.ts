@@ -87,6 +87,7 @@ export const he: Locale = {
       two: 'נטענו {count} שמות מהקובץ "{file}". בדקו את הרשימה.',
       other: 'נטענו {count} שמות מהקובץ "{file}". בדקו את הרשימה.',
     },
+    pdfTitle: 'תעודות — שעת הוויב קוד',
     archiveFileName: 'תעודות.zip',
     preparingArchive: 'מכין את הארכיון… {current} / {total}',
     archiveDownloaded: 'הארכיון הורד.',

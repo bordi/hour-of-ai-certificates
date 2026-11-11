@@ -66,6 +66,7 @@ export const en: Locale = {
       one: 'Loaded {count} name from “{file}”. Please check the list.',
       other: 'Loaded {count} names from “{file}”. Please check the list.',
     },
+    pdfTitle: 'Certificates — Hour of AI',
     archiveFileName: 'certificates.zip',
     preparingArchive: 'Preparing the archive… {current} / {total}',
     archiveDownloaded: 'Archive downloaded.',

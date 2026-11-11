@@ -48,6 +48,8 @@ export interface Messages {
   listChanged: string;
   noNamesInFile: string;
   importedFromFile: Plural;
+  /** Title of every generated PDF (shown in the viewer's title bar); names the initiative, not a student. */
+  pdfTitle: string;
   /** Name of the downloaded .zip; written like the entries inside it (see `FileNameStrategy`). */
   archiveFileName: string;
   preparingArchive: string;

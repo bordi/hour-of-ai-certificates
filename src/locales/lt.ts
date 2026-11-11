@@ -79,6 +79,7 @@ export const lt: Locale = {
       many: 'Iš failo „{file}“ įkelta {count} vardo. Patikrinkite sąrašą.',
       other: 'Iš failo „{file}“ įkelta {count} vardų. Patikrinkite sąrašą.',
     },
+    pdfTitle: 'Sertifikatai — DI valanda',
     archiveFileName: 'sertifikatai.zip',
     preparingArchive: 'Ruošiamas archyvas… {current} / {total}',
     archiveDownloaded: 'Archyvas atsisiųstas.',
