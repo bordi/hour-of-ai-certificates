@@ -69,10 +69,23 @@ describe('parseCsvNames', () => {
   it('does not drop a first row that is a real name', () => {
     expect(parseUk('Тарас;Шевченко\nЛеся;Українка')).toEqual(['Тарас Шевченко', 'Леся Українка']);
   });
+
+  it('keeps a first row that has a number, even with a header word in it', () => {
+    expect(parseCsvNames('תלמיד 1\nתלמיד 2', ['תלמיד'], HE_NAME)).toEqual(['תלמיד 1', 'תלמיד 2']);
+    expect(parseUk('Клас 5-А\nШевченко Тарас')).toEqual(['Клас 5-А', 'Шевченко Тарас']);
+  });
+
+  it('keeps a first row where only some columns look like labels (a surname such as Клас)', () => {
+    expect(parseUk('Клас;Іван\nШевченко;Тарас')).toEqual(['Клас Іван', 'Шевченко Тарас']);
+  });
+
+  it('a header may have a column without letters, such as №', () => {
+    expect(parseUk('№;Прізвище;Ім’я\nШевченко;Тарас')).toEqual(['Шевченко Тарас']);
+  });
 });
 
 describe('parseCsvNames header words come from the caller', () => {
-  const he = ['שם', 'תלמיד'];
+  const he = ['שם', 'משפחה', 'תלמיד'];
 
   it('skips a header made of the given words', () => {
     expect(parseCsvNames('שם;משפחה\nדוד;כהן', he, HE_NAME)).toEqual(['דוד כהן']);
