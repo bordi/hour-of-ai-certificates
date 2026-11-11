@@ -12,7 +12,7 @@ import {
   type PDFFont,
   type PDFPage,
 } from 'pdf-lib';
-import fontkit from '@pdf-lib/fontkit';
+import fontkit, { type Font } from '@pdf-lib/fontkit';
 import { glyphOrderInput, visualRuns } from './bidi';
 import { layoutName } from './layout';
 import type { Direction, NameStyle } from './locales';
@@ -30,9 +30,49 @@ export interface Assets {
  * right-to-left script, however the rest is written. Ask it, so `glyphOrderInput` can compensate.
  */
 export function createEngineProbe(fontBytes: Uint8Array): (text: string) => boolean {
-  const font = fontkit.create(fontBytes);
+  const font = shaperFor(fontBytes);
   return (text) => text !== '' && font.layout(text).direction === 'rtl';
 }
+
+/** A glyph drawn on its own: the text that encodes it, and where it goes relative to the run's start (points). */
+export interface PlacedGlyph {
+  text: string;
+  x: number;
+  y: number;
+}
+
+/**
+ * pdf-lib draws glyphs by their advance widths only and drops the font's mark positioning (GPOS), so Hebrew niqqud
+ * or a combining accent lands beside its letter. This places every glyph of a run where fontkit's layout puts it.
+ * Returns undefined when a glyph cannot be drawn on its own (pdf-lib would encode a different glyph for its text);
+ * the run is then drawn as a whole, as before.
+ */
+export function placeGlyphs(font: Font, text: string, size: number): { glyphs: PlacedGlyph[]; width: number } | undefined {
+  const { glyphs, positions } = font.layout(text);
+  const scale = size / font.unitsPerEm;
+  const placed: PlacedGlyph[] = [];
+  let pen = 0;
+  for (let i = 0; i < glyphs.length; i++) {
+    const glyph = glyphs[i];
+    const { xAdvance, xOffset, yOffset } = positions[i];
+    const alone = String.fromCodePoint(...glyph.codePoints);
+    const encoded = alone === '' ? [] : font.layout(alone).glyphs;
+    if (encoded.length !== 1 || encoded[0].id !== glyph.id) return undefined;
+    placed.push({ text: alone, x: (pen + xOffset) * scale, y: yOffset * scale });
+    pen += xAdvance;
+  }
+  return { glyphs: placed, width: pen * scale };
+}
+
+const shapers = new WeakMap<Uint8Array, Font>();
+function shaperFor(fontBytes: Uint8Array): Font {
+  let font = shapers.get(fontBytes);
+  if (!font) shapers.set(fontBytes, (font = fontkit.create(fontBytes)));
+  return font;
+}
+
+// Combining marks (niqqud, accents left decomposed) are the only glyphs whose position pdf-lib gets wrong.
+const MARKS = /\p{M}/u;
 
 /**
  * pdf-lib's subsetting breaks fonts with CFF outlines (.otf, file signature "OTTO"): macOS Preview then draws the
@@ -70,11 +110,16 @@ function drawName(page: PDFPage, font: PDFFont, name: string, assets: Assets): v
   for (const line of layout.lines) {
     const runs = visualRuns(line.text, assets.dir).map((run) => {
       const text = glyphOrderInput(run, engineReverses(run.text));
-      return { text, width: font.widthOfTextAtSize(text, layout.size) };
+      const placed = MARKS.test(text) ? placeGlyphs(shaperFor(assets.font), text, layout.size) : undefined;
+      return { text, placed, width: placed?.width ?? font.widthOfTextAtSize(text, layout.size) };
     });
     let x = box.centerX - runs.reduce((sum, run) => sum + run.width, 0) / 2;
     for (const run of runs) {
-      page.drawText(run.text, { x, y: line.y, size: layout.size, font, color });
+      if (run.placed) {
+        for (const g of run.placed.glyphs) page.drawText(g.text, { x: x + g.x, y: line.y + g.y, size: layout.size, font, color });
+      } else {
+        page.drawText(run.text, { x, y: line.y, size: layout.size, font, color });
+      }
       x += run.width;
     }
   }

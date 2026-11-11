@@ -26,6 +26,12 @@ describe('manual-check fixtures', () => {
     expect(unsupported(names, LOCALES.he)).toEqual([]);
   });
 
+  it('he-niqqud.txt: names with niqqud (and one without), all printable on /he/', () => {
+    const names = upload('he-niqqud.txt', LOCALES.he);
+    expect(names).toEqual(['שָׁלוֹם כֹּהֵן', 'דָּנִיֵּאל לֵוִי', 'מִרְיָם מִזְרָחִי', 'יוֹסֵף Cohen', 'נועה בן-דוד']);
+    expect(unsupported(names, LOCALES.he)).toEqual([]);
+  });
+
   it('he-utf8-bom.csv: Hebrew, accented Latin, Cyrillic and a mixed name, all printable on /he/', () => {
     const names = upload('he-utf8-bom.csv', LOCALES.he);
     expect(names).toEqual(['דני כהן', 'שרה לוי', 'José Núñez', 'Мар’яна Ґудзь', 'Ivan דני']);
