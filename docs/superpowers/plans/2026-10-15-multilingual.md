@@ -117,7 +117,7 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] `supportedLocales()` = registered locales filtered by `filterLocales(locales, includeDrafts)`. Drafts are included when `import.meta.env.DEV` (`npm run dev`) or `VITE_ENABLE_DRAFT_LOCALES === 'true'`; a local `vite build` + `vite preview` behaves like production. `route()` takes the locale list as a parameter, so tests can use stand-in drafts.
 - [x] `netlify.toml`: `[context.production.environment]` `false`; `[context.deploy-preview.environment]` and `[context.branch-deploy.environment]` `true`.
 - [x] Tests: production set is ready-only and `uk` is ready; `/en/` in production falls through to detection; with drafts `/en/` is served and English is the fallback for unknown codes; `netlify.toml` has the three contexts and the catch-all rewrite.
-- [ ] Verify on Netlify now that Task 11 added `en` and `he` (see the checklist in Task 11): the preview serves `/en/` and `/he/`, production redirects both to a ready locale. Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
+- [x] Verify on Netlify now that Task 11 added `en` and `he` (see the checklist in Task 11): the preview serves `/en/` and `/he/` (verified 2026-11-11); production redirects both to a ready locale (after the merge, tracked in Task 11). Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
 - [ ] Pull request description lists the known limits: draft locales use the Ukrainian certificate text; Hebrew names cannot be drawn with the current font; Hebrew/English wording not yet reviewed. (Written when `en`/`he` land.)
 - [x] Commit: `feat: gate draft locales to dev and deploy previews`
 
@@ -143,7 +143,8 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] `csv`: `en` uses `windows-1252` and English header words; `he` uses `windows-1255` and Hebrew header words (also the Latin ones). `name.apostrophes` is `ʼ` only for both, so `O'Brien` and `ג'ורג'` stay as typed; `fileNameStrategy` is `keep`.
 - [x] Example CSVs: Latin names with diacritics for `en`; Hebrew names under a Hebrew header for `he`. The check for unsupported characters only looks at the names in the list when certificates are created, not at the example file, so with the current font (no Hebrew) uploading the Hebrew example and creating certificates shows the skip dialog until a Hebrew font is chosen (Task 13). `he` is a draft, so only previews show this.
 - [x] Both are `draft`: reachable in dev and on deploy previews, not in production. Tests: every plural form present, registry order and directions, only `uk` ready, example CSVs parse.
-- [ ] To verify on the deploy preview (this also closes the check left open in Task 9): sections 1–5 of `docs/manual-testing.md` (routing, every language, examples and fixtures). On the production site (`main`) `/en/`, `/he/`, `/lt/` must still end on `/uk/`; that part can only be checked after the merge.
+- [x] Verified on the deploy preview by the user (2026-11-11), which also closes the check left open in Task 9: sections 1–5 of `docs/manual-testing.md` (routing, every language, examples and fixtures) pass. The one failure found, a first name lost as a header row, is fixed (see "Notes" at the end).
+- [ ] On the production site (`main`), after the merge: `/en/`, `/he/`, `/lt/` must still end on `/uk/`.
 - [x] Commits: `feat: add english locale (draft)`, `feat: add hebrew locale (draft)`
 
 ### Task 12: README
