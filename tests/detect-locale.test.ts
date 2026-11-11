@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { detectLocale } from '../src/detect-locale';
 
-const ALL = ['uk', 'en', 'he'];
+const ALL = ['uk', 'en', 'he', 'lt'];
 
 describe('detectLocale', () => {
   describe('language code in the URL', () => {
@@ -12,6 +12,8 @@ describe('detectLocale', () => {
       ['/he', 'he'],
       ['/HE/', 'he'],
       ['/he/anything/else', 'he'],
+      ['/lt/', 'lt'],
+      ['/LT', 'lt'],
     ])('%s -> %s', (pathname, expected) => {
       expect(detectLocale(pathname, ['uk'], ALL)).toBe(expected);
     });
@@ -49,6 +51,7 @@ describe('detectLocale', () => {
     it('matches region variants by their base language', () => {
       expect(detectLocale('/', ['uk-UA'], ALL)).toBe('uk');
       expect(detectLocale('/', ['en-US'], ALL)).toBe('en');
+      expect(detectLocale('/', ['lt-LT'], ALL)).toBe('lt');
     });
 
     it('sends Russian to Ukrainian, even ahead of English', () => {

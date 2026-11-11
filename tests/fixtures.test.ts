@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { decodeText, parseCsvNames } from '../src/csv';
+import { certificateFileName } from '../src/filenames';
 import { createFontCoverage, splitByCoverage } from '../src/glyphs';
 import { MAX_NAMES, parseNames } from '../src/names';
 import { LOCALES } from '../src/locales';
@@ -35,6 +36,19 @@ describe('manual-check fixtures', () => {
     const names = upload('uk-excel-windows-1251.csv', LOCALES.uk);
     expect(names).toEqual(['Шевченко Тарас', 'Мар’яненко Ґанна', 'Їжакевич-Сірко Євгенія', 'Йосипенко Юрій']);
     expect(unsupported(names, LOCALES.uk)).toEqual([]);
+  });
+
+  it('lt-excel-windows-1257.csv: an Excel export (windows-1257) with every Lithuanian letter, kept in zip file names', () => {
+    const names = upload('lt-excel-windows-1257.csv', LOCALES.lt);
+    expect(names).toEqual(['Ąžuolas Čiurlionis', 'Kęstutis Šimkus', 'Rūta Petraitytė-Žemaitienė', 'Įgaudė Mažylienė', 'ąčęėįšųūž ĄČĘĖĮŠŲŪŽ']);
+    expect(unsupported(names, LOCALES.lt)).toEqual([]);
+    expect(names.map((n, i) => certificateFileName(i, names.length, n, LOCALES.lt.fileNameStrategy))).toEqual([
+      '01_Ąžuolas_Čiurlionis.pdf',
+      '02_Kęstutis_Šimkus.pdf',
+      '03_Rūta_Petraitytė_Žemaitienė.pdf',
+      '04_Įgaudė_Mažylienė.pdf',
+      '05_ąčęėįšųūž_ĄČĘĖĮŠŲŪŽ.pdf',
+    ]);
   });
 
   it.each(['uk', 'en'] as const)('uk-with-hebrew.txt on /%s/: only the Hebrew name goes to the skip dialog', (code) => {

@@ -105,13 +105,13 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
 });
 
 describe('registered locales', () => {
-  it('knows uk, en and he, with the direction of each language', () => {
-    expect(Object.keys(LOCALES)).toEqual(['uk', 'en', 'he']);
-    expect(Object.values(LOCALES).map((l) => l.dir)).toEqual(['ltr', 'ltr', 'rtl']);
+  it('knows uk, en, he and lt, with the direction of each language', () => {
+    expect(Object.keys(LOCALES)).toEqual(['uk', 'en', 'he', 'lt']);
+    expect(Object.values(LOCALES).map((l) => l.dir)).toEqual(['ltr', 'ltr', 'rtl', 'ltr']);
   });
 
-  it('only uk is ready; en and he are drafts until their final templates exist', () => {
+  it('only uk is ready; en, he and lt are drafts until they are reviewed and have their final templates', () => {
     expect(filterLocales(Object.values(LOCALES), false).map((l) => l.code)).toEqual(['uk']);
-    expect(filterLocales(Object.values(LOCALES), true).map((l) => l.code)).toEqual(['uk', 'en', 'he']);
+    expect(filterLocales(Object.values(LOCALES), true).map((l) => l.code)).toEqual(['uk', 'en', 'he', 'lt']);
   });
 });
