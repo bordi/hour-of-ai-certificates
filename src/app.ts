@@ -148,7 +148,7 @@ downloadBtn.addEventListener('click', async () => {
     const url = URL.createObjectURL(new Blob([zip as Uint8Array<ArrayBuffer>], { type: 'application/zip' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'sertyfikaty.zip';
+    a.download = t('archiveFileName');
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
     setStatus(t('archiveDownloaded'));

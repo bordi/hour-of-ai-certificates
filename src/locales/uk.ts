@@ -79,6 +79,7 @@ export const uk: Locale = {
       many: 'Завантажено {count} імен з файлу «{file}». Перевірте список.',
       other: 'Завантажено {count} імен з файлу «{file}». Перевірте список.',
     },
+    archiveFileName: 'sertyfikaty.zip',
     preparingArchive: 'Готуємо архів… {current} / {total}',
     archiveDownloaded: 'Архів завантажено.',
     archiveFailed: 'Не вдалося створити архів.',

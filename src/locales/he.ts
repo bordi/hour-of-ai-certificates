@@ -87,6 +87,7 @@ export const he: Locale = {
       two: 'נטענו {count} שמות מהקובץ "{file}". בדקו את הרשימה.',
       other: 'נטענו {count} שמות מהקובץ "{file}". בדקו את הרשימה.',
     },
+    archiveFileName: 'תעודות.zip',
     preparingArchive: 'מכין את הארכיון… {current} / {total}',
     archiveDownloaded: 'הארכיון הורד.',
     archiveFailed: 'לא ניתן היה ליצור את הארכיון.',

@@ -48,6 +48,8 @@ export interface Messages {
   listChanged: string;
   noNamesInFile: string;
   importedFromFile: Plural;
+  /** Name of the downloaded .zip; written like the entries inside it (see `FileNameStrategy`). */
+  archiveFileName: string;
   preparingArchive: string;
   archiveDownloaded: string;
   archiveFailed: string;

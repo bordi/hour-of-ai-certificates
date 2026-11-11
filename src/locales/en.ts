@@ -66,6 +66,7 @@ export const en: Locale = {
       one: 'Loaded {count} name from “{file}”. Please check the list.',
       other: 'Loaded {count} names from “{file}”. Please check the list.',
     },
+    archiveFileName: 'certificates.zip',
     preparingArchive: 'Preparing the archive… {current} / {total}',
     archiveDownloaded: 'Archive downloaded.',
     archiveFailed: 'Could not create the archive.',

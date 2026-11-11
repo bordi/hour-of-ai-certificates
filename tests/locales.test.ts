@@ -75,6 +75,12 @@ describe.each(Object.entries(LOCALES))('locale %s', (key, locale) => {
     expect(emboldening).toBeLessThan(0.1);
   });
 
+  it('names its .zip in its own language, as safely as the entries inside it', () => {
+    const name = locale.messages.archiveFileName;
+    expect(name).toMatch(/^[^\\/:*?"<>|\s]+\.zip$/);
+    if (locale.fileNameStrategy === 'kmu-2010') expect(name).toMatch(/^[\x21-\x7e]+$/);
+  });
+
   it('has usable csv rules', () => {
     expect(locale.csv.headerWords.length).toBeGreaterThan(0);
     for (const word of locale.csv.headerWords) expect(word, word).toBe(word.toLowerCase());
