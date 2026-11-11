@@ -118,7 +118,7 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] `netlify.toml`: `[context.production.environment]` `false`; `[context.deploy-preview.environment]` and `[context.branch-deploy.environment]` `true`.
 - [x] Tests: production set is ready-only and `uk` is ready; `/en/` in production falls through to detection; with drafts `/en/` is served and English is the fallback for unknown codes; `netlify.toml` has the three contexts and the catch-all rewrite.
 - [x] Verify on Netlify now that Task 11 added `en` and `he` (see the checklist in Task 11): the preview serves `/en/` and `/he/` (verified 2026-11-11); production redirects both to a ready locale (after the merge, tracked in Task 11). Until Task 11 the only visible check is that nothing regressed on `/uk/`, and that the build still succeeds with the new `[context.*]` tables.
-- [ ] Pull request description lists the known limits: draft locales use the Ukrainian certificate text; Hebrew names cannot be drawn with the current font; Hebrew/English wording not yet reviewed. (Written when `en`/`he` land.)
+- [x] Pull request description lists the known limits (rewritten 2026-11-11 for `uk`/`en`/`he`/`lt`): `en` and `lt` carry the Ukrainian certificate text; texts await review; Hebrew names cannot be printed on `uk`/`en`/`lt`; niqqud; the one-column header case. It also lists what changes for `uk` on merge.
 - [x] Commit: `feat: gate draft locales to dev and deploy previews`
 
 ### Task 10: Hebrew rendering in PDF

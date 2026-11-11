@@ -141,8 +141,8 @@ languages only on previews. Production never shows them.
   Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
   Preview or Acrobat.
 - A file's first row is skipped as a header when every column with letters has one of the locale's header words and no column
-  has a number (`Прізвище;Ім’я`, `Vardas;Pavardė`, `שם פרטי;שם משפחה`). A one-column list whose first student is called like a
-  header word ("Клас", "Student") is still taken for a header; the page asks to check the list after importing.
+  has a number (`Прізвище;Ім’я`, `Vardas;Pavardė`, `שם פרטי;שם משפחה`). A one-column list whose first name contains a header word
+  and no number (`Клас Іван`, `Student Anna`) is still taken for a header; the page asks to check the list after importing.
 - The English, Hebrew and Lithuanian texts are a first draft and need a native speaker's review.
 - Final templates for `uk` (redesign), `en` and `lt` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
   files, so a new design only replaces `index.html` and `src/styles.css`.
