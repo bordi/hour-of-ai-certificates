@@ -33,6 +33,7 @@ replaced, so logic must not depend on markup beyond element ids.
 | Name style | Per locale: position and size range (`box`), colour (the template's own blue) and synthetic-bold strength, all in the template's own points. |
 | Name on certificate | Printed exactly as entered (no reordering, no case changes). Locale-specific normalisation only where the font cannot render the character. Letters with diacritics (`é`, `ñ`, `ü`, `ø`, `ł`, …) are never stripped or replaced. |
 | Zip entry names | Option B: keep the student's name with its original letters (including diacritics and Hebrew), with a leading number. Correct names matter more than ASCII-only. Must be verified on Windows and macOS. The archive itself is named in the page's language (`messages.archiveFileName`). |
+| PDF title | Per language, the same for every file and never a student's name (decided 2026-11-11): `Сертифікати — Година ШІ`, `Certificates — Hour of AI`, `תעודות — שעת הוויב קוד`, `Sertifikatai — DI valanda` (`messages.pdfTitle`). Before, every language had the Ukrainian title, and a single certificate was titled with the name. |
 | README | Added (`README.md`), including "How to add a language". |
 | Everything else | Unchanged from v1: client-side only, no analytics, desktop only, 300-name limit. |
 
