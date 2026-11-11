@@ -47,7 +47,8 @@ npm run preview   # serve dist/ locally; behaves like production (no drafts)
 ```
 
 `tests/fixtures/` has class lists for checking the site by hand: Excel exports in each language's legacy encoding, a list with a
-name the font cannot draw, and lists at and over the 300-name limit. Upload them on a deploy preview.
+name the font cannot draw, and lists at and over the 300-name limit. Upload them on a deploy preview,
+following [the manual test list](docs/manual-testing.md).
 
 `vite dev` and `vite preview` serve `index.html` for every path, so they hide hosting problems. Anything about routing,
 rewrites, redirects or headers has to be checked on a Netlify deploy preview.
@@ -75,6 +76,7 @@ public/locales/<code>/     template.pdf and example.csv of each language
 public/fonts/              certificate fonts, the Hebrew UI font, and their licence
 tests/fixtures/            class lists for checking the site by hand
 docs/superpowers/          design specs and implementation plans
+docs/manual-testing.md     what to check by hand on a deploy preview
 ```
 
 Details and the reasons behind decisions are in
@@ -138,6 +140,9 @@ languages only on previews. Production never shows them.
 - pdf-lib cannot subset `.otf` (CFF) fonts correctly, so such a font would be embedded whole; all fonts in use are `.ttf`.
   Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
   Preview or Acrobat.
+- A file's first row is skipped as a header when every column with letters has one of the locale's header words and no column
+  has a number (`Прізвище;Ім’я`, `Vardas;Pavardė`, `שם פרטי;שם משפחה`). A one-column list whose first student is called like a
+  header word ("Клас", "Student") is still taken for a header; the page asks to check the list after importing.
 - The English, Hebrew and Lithuanian texts are a first draft and need a native speaker's review.
 - Final templates for `uk` (redesign), `en` and `lt` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
   files, so a new design only replaces `index.html` and `src/styles.css`.

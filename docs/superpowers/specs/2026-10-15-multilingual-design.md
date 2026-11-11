@@ -83,7 +83,7 @@ a deploy-preview link and change the code themselves.
 | `templateUrl` | `/locales/<lang>/template.pdf` |
 | `fontUrl` | Font able to render this script (and Latin, for foreign names) |
 | `nameStyle` | `box` (name position/size range for this template), `color`, `emboldening` |
-| `csv.headerWords`, `csv.fallbackEncoding` | Header detection; legacy Excel encoding (`windows-1251` / `windows-1255` / `windows-1252` / `windows-1257`) |
+| `csv.headerWords`, `csv.fallbackEncoding` | Header detection: the first row is a header when every column with letters has a header word and no column has a number. Changed 2026-11-11: "any word of any column" dropped real first students (`תלמיד 1`, a surname such as "Клас"). A header that slips through stays visible and is easy to delete; a lost student is not noticed; legacy Excel encoding (`windows-1251` / `windows-1255` / `windows-1252` / `windows-1257`) |
 | `normalizeName` policy | Which characters are rewritten (see below) |
 | `fileNameStrategy` | How zip entry names are built (see below) |
 

@@ -143,7 +143,7 @@ There is no language switcher: the language is chosen only by the code in the UR
 - [x] `csv`: `en` uses `windows-1252` and English header words; `he` uses `windows-1255` and Hebrew header words (also the Latin ones). `name.apostrophes` is `ʼ` only for both, so `O'Brien` and `ג'ורג'` stay as typed; `fileNameStrategy` is `keep`.
 - [x] Example CSVs: Latin names with diacritics for `en`; Hebrew names under a Hebrew header for `he`. The check for unsupported characters only looks at the names in the list when certificates are created, not at the example file, so with the current font (no Hebrew) uploading the Hebrew example and creating certificates shows the skip dialog until a Hebrew font is chosen (Task 13). `he` is a draft, so only previews show this.
 - [x] Both are `draft`: reachable in dev and on deploy previews, not in production. Tests: every plural form present, registry order and directions, only `uk` ready, example CSVs parse.
-- [ ] To verify on the deploy preview (this also closes the check left open in Task 9): `/en/` and `/he/` open (Hebrew mirrored, certificate text is still Ukrainian); an unknown code (`/fr/`) goes to `/en/` for a non-Ukrainian browser; the example CSV of each language loads and generates; on the production site (`main`) `/en/` and `/he/` still end on `/uk/`.
+- [ ] To verify on the deploy preview (this also closes the check left open in Task 9): sections 1–5 of `docs/manual-testing.md` (routing, every language, examples and fixtures). On the production site (`main`) `/en/`, `/he/`, `/lt/` must still end on `/uk/`; that part can only be checked after the merge.
 - [x] Commits: `feat: add english locale (draft)`, `feat: add hebrew locale (draft)`
 
 ### Task 12: README
@@ -180,6 +180,7 @@ Partly blocked: the final designs exist only for `he` so far.
 - [ ] Decide whether and how to position niqqud.
 - [x] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): received Regular and SemiBold (see above).
 - [ ] Check a Hebrew PDF in Acrobat and on a printer.
+- [ ] On the deploy preview: the second request for `WMHTV8-SemiBold.ttf` on `/he/` (CSS and generator both fetch it) is served from cache or `304` (`docs/manual-testing.md`, section 6).
 - [ ] Which initiative the English page is for (it says "Hour of AI").
 - [ ] **Zip check on Windows and macOS** (Hebrew, accented, Lithuanian and Ukrainian names; the archive names too): names correct in Explorer/Finder/Archive Utility.
 - [ ] Native-speaker review of the Hebrew, English and Lithuanian UI strings (Lithuanian: the Lithuanian representative, including the name „DI valanda“).
@@ -196,3 +197,14 @@ Requested 2026-11-11: Hour of AI in Lithuania, adapted from the Ukrainian page; 
 - [x] `tests/fixtures/`: class lists for checking the site by hand (Excel encodings `windows-1251`/`1255`/`1257`, UTF-8 with BOM, a Hebrew name on `uk`/`en`, 300 and 301 names); `tests/fixtures.test.ts` keeps each one true to what it promises.
 - [ ] Review of the texts by the Lithuanian representative; final template and calibration; zip check on Windows; then `ready` (Task 13).
 - [x] Commits: `test: add class lists for checking the site by hand`, `feat: add lithuanian locale (draft)`, `feat: name the zip archive in the language of the page`
+
+### Notes
+
+- **Netlify did not build new commits (2026-10-28).** The deploy preview stayed on `10812d1` although newer commits were pushed (an
+  empty `chore: trigger netlify deploy` did not help either). Nothing was changed: about a day later Netlify built on its own. If it
+  happens again, check the Deploys list and the build status first, and wait before changing settings.
+- **Manual test list**: `docs/manual-testing.md` (added 2026-11-11), with the fixtures in `tests/fixtures/`.
+- **Header row (2026-11-11).** On the deploy preview a one-column list starting with `תלמיד 1` lost its first name (`תלמיד`, "student",
+  is a header word). Header detection now needs a header word in every column with letters and no number anywhere; the limit
+  fixtures use realistic names without numbers. Commit: `fix: take a first row for a header only if every column is labelled`
+- Commit: `docs: manual test list, header-row rule and netlify notes`
