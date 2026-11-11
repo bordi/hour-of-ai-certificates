@@ -195,6 +195,16 @@ Nothing blocks the merge any more: the functionality is verified on the deploy p
 
 **After the merge**: the production check is in Task 11.
 
+**Release plan (agreed 2026-11-11)**
+1. Merge only after the native-speaker review of the translations. Until then the pull request stays a draft.
+2. `he` goes live together with the merge: after its review and the Windows zip check, a separate commit `feat: enable hebrew locale`
+   flips it to `ready` before merging. Its template is final.
+3. `lt` and `en` stay drafts until their own templates exist (a copy of the Ukrainian one would give Lithuanian or English teachers
+   a certificate with Ukrainian text); each goes live later with its own commit.
+4. Opening `en` changes production for every visitor whose browser language is not supported: they land on `/en/` instead of `/uk/`.
+5. Not planned, only noted: an `unlisted` status (reachable by its URL on production, never chosen by language detection), if
+   colleagues need a link without the deploy preview's team login.
+
 ### Task 14: `lt` locale (draft), archive names, manual-check lists
 
 Requested 2026-11-11: Hour of AI in Lithuania, adapted from the Ukrainian page; a copy of the Ukrainian template until the design arrives.

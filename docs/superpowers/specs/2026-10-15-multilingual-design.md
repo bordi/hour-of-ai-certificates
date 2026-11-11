@@ -67,7 +67,7 @@ Mechanism: the build flag `VITE_ENABLE_DRAFT_LOCALES`. `npm run dev` enables it;
 `netlify.toml` (`true` for `deploy-preview` and `branch-deploy`, `false` for `production`). `detectLocale` and the router only
 know the locales the flag allows.
 
-Release flow: pushing to `main` deploys production (only `ready` locales). Later, a separate push puts the final PDFs in place,
+Release flow: pushing to `main` deploys production (only `ready` locales). Agreed 2026-11-11: merge after the translation review, with `he` flipped to `ready` in the same pull request; `lt` and `en` follow when their templates exist (plan, Task 13, "Release plan"). Later, a separate push puts the final PDFs in place,
 sets the locale's `nameStyle`, and flips a locale to `ready`. Deploy Previews are enabled for the Netlify site (confirmed by the stakeholder).
 
 **There is no language switcher.** The language is changed only by editing the code in the URL (`/uk/` → `/en/`). Reviewers get
