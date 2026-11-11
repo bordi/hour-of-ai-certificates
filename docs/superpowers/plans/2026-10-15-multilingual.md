@@ -168,7 +168,7 @@ Partly blocked: the final designs exist only for `he` so far.
 - Found when the user opened a zip in macOS Preview: with the `.otf` font every name printed as `!"#$%…`. pdf-lib's subset of a CFF font is broken outside pdf.js, and my checks had used pdf.js only. Fixed by embedding CFF fonts whole (`canSubset`, +≈45 KB per PDF; TrueType is still subset); checked with macOS's own renderer (`sips`, `qlmanage`), and a test rejects the broken subset form (`CIDFontType0C`). From now on PDFs are also checked with the macOS renderer, not only pdf.js.
 - Decided with the user: on `uk`/`en` Hebrew names stay unsupported (skip dialog), no fallback font; Israel has its own initiative and page.
 - Confirmed by the user: the Hebrew zip opens correctly in macOS Preview after the fix.
-- Found: **niqqud is misplaced** (pdf-lib ignores the font's GPOS mark offsets). Names without niqqud are fine. Open; options to be weighed separately.
+- Found: **niqqud is misplaced** (pdf-lib ignores the font's GPOS mark offsets). Names without niqqud are fine. Fixed 2026-11-11 (see below).
 
 **Hebrew fonts in TrueType (done 2026-10-28)**
 - [x] `WMHTV8-Regular.ttf` and `WMHTV8-SemiBold.ttf` (Wix Madefor Hebrew, SIL OFL) replace `WMHT-V7-Regular.otf`. Same metrics, so the calibration holds.
@@ -176,16 +176,22 @@ Partly blocked: the final designs exist only for `he` so far.
 - [x] Web UI: Hebrew characters in Wix Madefor Hebrew 400/600 (`@font-face` with a Hebrew `unicode-range`) instead of the system fallback (Lucida Grande in Chrome on macOS). Checked in Chrome: `/he/` loads both files, `/uk/` none.
 - [x] Commits: `feat: print hebrew names with Wix Madefor Hebrew SemiBold`, `feat: show hebrew interface text in Wix Madefor Hebrew`
 
-**Still to do**
+**Before the merge into `main`** (on the deploy preview of the latest push)
+- [ ] `tests/fixtures/he-300-names.txt` on `/he/` keeps its first name `נועה כהן` (header-row fix).
+- [ ] `tests/fixtures/he-niqqud.txt` on `/he/`: the marks sit on their letters in macOS Preview.
+
+**Not blocking the merge** (needed before a locale becomes `ready`)
 - [ ] Final `uk` (redesign), `en` and `lt` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
-- [ ] Decide whether and how to position niqqud.
+- [x] Niqqud positioned (2026-11-11): runs with combining marks are drawn glyph by glyph at fontkit's GPOS positions, runs without marks exactly as before. Checked in the macOS renderer (`שָׁלוֹם כֹּהֵן`, `דָּנִיֵּאל לֵוִי`, mixed `יוֹסֵף Cohen 2`); tests check that vowel points and dagesh are centred on their letter and the shin dot is on the right, and fail without the offsets. Commit: `feat: position niqqud and other combining marks in the pdf`
 - [x] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): received Regular and SemiBold (see above).
 - [ ] Check a Hebrew PDF in Acrobat and on a printer.
 - [ ] On the deploy preview: the second request for `WMHTV8-SemiBold.ttf` on `/he/` (CSS and generator both fetch it) is served from cache or `304` (`docs/manual-testing.md`, section 6).
-- [ ] Which initiative the English page is for (it says "Hour of AI").
+- [x] What the English page is for (2026-11-11): a reference for colleagues, to check the translation and how the site works. It stays a draft.
 - [ ] **Zip check on Windows and macOS** (Hebrew, accented, Lithuanian and Ukrainian names; the archive names too): names correct in Explorer/Finder/Archive Utility.
 - [ ] Native-speaker review of the Hebrew, English and Lithuanian UI strings (Lithuanian: the Lithuanian representative, including the name „DI valanda“).
 - [ ] Flip `status` to `ready`. Commit per locale: `feat: enable <lang> locale`
+
+**After the merge**: the production check is in Task 11.
 
 ### Task 14: `lt` locale (draft), archive names, manual-check lists
 

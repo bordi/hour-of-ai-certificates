@@ -21,7 +21,7 @@ replaced, so logic must not depend on markup beyond element ids.
 | Topic | Decision |
 |---|---|
 | Language codes | ISO 639-1: `uk`, `en`, `he`, `lt`. No `/ua/` alias. |
-| Languages now | `uk`, `en`, `he`; `lt` added 2026-11-11 (Hour of AI in Lithuania, adapted from the Ukrainian page; the Lithuanian representative reviews the texts). |
+| Languages now | `uk`, `en`, `he`; `lt` added 2026-11-11. `en` is a reference page: colleagues use it to check the translation and how the site works (decided 2026-11-11); it stays a draft (Hour of AI in Lithuania, adapted from the Ukrainian page; the Lithuanian representative reviews the texts). |
 | Languages later | `ar` — **not approved**, may be added in the future. Not implemented, not in the registry. |
 | URL scheme | `/<lang>/` on a single static page. A catch-all Netlify rewrite `/*` → `/index.html` (200) serves the page for every path; real files (assets, locales, fonts) still take precedence. The page reads the first path segment. |
 | Language detection | See below. Applies only when the URL has no supported language code. |
@@ -128,9 +128,12 @@ The PDF side and the UI side are separate problems.
   pdf.js (the page preview) shows it correctly, so the bug is easy to miss. CFF fonts are therefore embedded whole (`canSubset`), and
   pdf-lib then labels them as TrueType (`CIDFontType2`/`FontFile2`), which only macOS Preview and pdf.js are verified to accept. All
   fonts in use are TrueType and subset (the first Hebrew font, `WMHT-V7-Regular.otf`, was replaced on 2026-10-28). Check PDFs outside pdf.js.
-- **Niqqud is not positioned correctly.** The font places vowel marks with GPOS offsets; fontkit computes them, but pdf-lib draws
-  glyphs by advance width only, so marks land beside their letter. Names without niqqud (the usual case in class lists) are fine.
-  Open item.
+- **Niqqud and other combining marks are positioned (2026-11-11).** The font places marks with GPOS offsets; fontkit computes
+  them, but pdf-lib draws glyphs by advance width only, so marks landed beside their letter. A run that contains combining marks
+  (`\p{M}`) is now drawn glyph by glyph at fontkit's positions (`placeGlyphs`). Runs without marks are drawn as a whole, exactly as
+  before (the PDF is byte-identical). If a glyph cannot be drawn on its own (pdf-lib would encode another glyph for its text), the run
+  falls back to the old drawing. A mark the font has no anchor for (e.g. a tilde over `ū` in Wix Madefor Display) stays where it was.
+  Such a name is split into single glyphs in the PDF's text layer, so searching or copying it there may not find it whole.
 - Before generating, check glyph coverage per name: a glyph the font lacks is printed as an empty box, silently. Names that cannot be
   drawn are not printed. If there are any, a dialog (native `<dialog>`, Escape or "back" cancel) lists each such name with the characters
   that are missing and offers two choices: **go back to editing the list** (the default), or **create certificates for the remaining
@@ -214,7 +217,5 @@ design, any server-side processing.
 ## Open items
 
 - Final templates for `uk` (redesign), `en` and `lt`, and their calibration; their fonts (Hebrew is settled).
-- Niqqud positioning in the PDF (GPOS mark offsets are not applied by pdf-lib).
-- The English UI names "Hour of AI"; which initiative the English page is for is still to be confirmed.
 - The Lithuanian name of the initiative, „DI valanda“, is a draft; the Lithuanian representative confirms it with the texts.
 - UI design (will replace markup and CSS only).

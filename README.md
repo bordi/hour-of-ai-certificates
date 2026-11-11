@@ -13,7 +13,7 @@ The language is chosen by the code in the URL: `/uk/`, `/en/`, `/he/`, `/lt/`. T
 | Code | Language | Status |
 |---|---|---|
 | `uk` | Ukrainian | ready |
-| `en` | English | draft |
+| `en` | English (reference for colleagues: checks the translation and how the site works) | draft |
 | `he` | Hebrew (right to left) | draft |
 | `lt` | Lithuanian | draft |
 | `ar` | Arabic | not approved; may be added later |
@@ -136,7 +136,8 @@ languages only on previews. Production never shows them.
 
 - `uk`, `en` and `lt` print with Wix Madefor Display Bold, which has **no Hebrew**; there a Hebrew name is listed in a dialog that
   offers to create certificates for the rest. This is intended: Israel has its own initiative and page (`/he/`). `he` prints with Wix Madefor Hebrew SemiBold, which covers Hebrew, Latin and Cyrillic.
-- **Niqqud** (Hebrew vowel marks) is not positioned correctly in the PDF yet: pdf-lib ignores the font's mark positioning.
+- Names with **niqqud** or other combining marks are drawn glyph by glyph, so the marks sit where the font puts them; in the PDF's
+  text layer such a name is split into letters (search and copy in a PDF viewer may not find it whole).
 - pdf-lib cannot subset `.otf` (CFF) fonts correctly, so such a font would be embedded whole; all fonts in use are `.ttf`.
   Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
   Preview or Acrobat.

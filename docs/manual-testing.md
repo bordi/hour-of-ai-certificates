@@ -10,6 +10,7 @@ real hosting); `vite dev` and `vite preview` serve every path themselves and hid
 | File | What it checks |
 |---|---|
 | `he-excel-windows-1255.csv` | A Hebrew Excel export: `windows-1255`, two columns joined by `;`, header row |
+| `he-niqqud.txt` | Hebrew names with niqqud (vowel points, dagesh, shin dot), a mixed one and one without |
 | `he-utf8-bom.csv` | UTF-8 with BOM: Hebrew, Latin with accents, Cyrillic, a mixed name |
 | `uk-excel-windows-1251.csv` | A Ukrainian Excel export: `windows-1251`, apostrophe `'` |
 | `lt-excel-windows-1257.csv` | A Lithuanian Excel export: `windows-1257`, every Lithuanian letter, small and capital |
@@ -45,7 +46,9 @@ On the **production** site (after a merge to `main`) the draft languages must no
    Preview** (not only the browser): the name in SemiBold, in the template's blue, no boxes, no `!"#$%`.
 6. **Print**: a new tab with one PDF of all pages. If the browser blocks it, a message asks to allow pop-ups.
 7. **Edit after creating**: a message says the list changed; download and print stay off until certificates are created again.
-8. **Limit**: `he-300-names.txt` generates (a few seconds); `he-301-names.txt` gives the "maximum 300" error.
+8. **Niqqud**: `he-niqqud.txt`; in macOS Preview every vowel point sits under or over its own letter, the dot of `ש` on its
+   upper right, the dagesh inside the letter. `נועה בן-דוד` (no marks) looks as it always did.
+9. **Limit**: `he-300-names.txt` generates (a few seconds); `he-301-names.txt` gives the "maximum 300" error.
 
 ## 3. `/uk/`
 
