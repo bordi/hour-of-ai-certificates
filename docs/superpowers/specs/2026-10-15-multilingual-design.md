@@ -20,19 +20,19 @@ replaced, so logic must not depend on markup beyond element ids.
 
 | Topic | Decision |
 |---|---|
-| Language codes | ISO 639-1: `uk`, `en`, `he`. No `/ua/` alias. |
-| Languages now | `uk`, `en`, `he`. |
+| Language codes | ISO 639-1: `uk`, `en`, `he`, `lt`. No `/ua/` alias. |
+| Languages now | `uk`, `en`, `he`; `lt` added 2026-11-11 (Hour of AI in Lithuania, adapted from the Ukrainian page; the Lithuanian representative reviews the texts). |
 | Languages later | `ar` — **not approved**, may be added in the future. Not implemented, not in the registry. |
 | URL scheme | `/<lang>/` on a single static page. A catch-all Netlify rewrite `/*` → `/index.html` (200) serves the page for every path; real files (assets, locales, fonts) still take precedence. The page reads the first path segment. |
 | Language detection | See below. Applies only when the URL has no supported language code. |
 | Language selection UI | None. No dropdown or switcher; the language is chosen only by the code in the URL. |
-| Draft languages | `en`, `he` are reachable in dev and on Netlify deploy previews, not in production (see "Draft languages"). Netlify deploys `main` to the live site. |
-| Templates | One PDF per language, any size with A4-landscape proportions (the preview frame is 842:595). **`he` has its final template** (2026-10-21, 1212.48 × 856.8 pt). `uk` (redesign) and `en` still use a copy of the 2025 Ukrainian template. See "Template calibration". |
-| Fonts | `uk`, `en`: Wix Madefor Display Bold. `he`: Wix Madefor Hebrew SemiBold (`WMHTV8-SemiBold.ttf`, TrueType, SIL OFL, Hebrew + Latin + Cyrillic), no synthetic bold. Web UI: Wix Madefor Text (Google Fonts); Hebrew characters come from Wix Madefor Hebrew Regular and SemiBold (`WMHTV8-*.ttf`, `@font-face` limited to Hebrew by `unicode-range`, so other pages never load them; 700 falls back to 600). |
-| Hebrew names on `uk`/`en` | Not printed, by decision (2026-10-21): their font has no Hebrew, and Israel has its own initiative and page (`/he/`). The skip dialog names them; no fallback font. |
+| Draft languages | `en`, `he`, `lt` are reachable in dev and on Netlify deploy previews, not in production (see "Draft languages"). Netlify deploys `main` to the live site. |
+| Templates | One PDF per language, any size with A4-landscape proportions (the preview frame is 842:595). **`he` has its final template** (2026-10-21, 1212.48 × 856.8 pt). `uk` (redesign), `en` and `lt` still use a copy of the 2025 Ukrainian template. See "Template calibration". |
+| Fonts | `uk`, `en`, `lt`: Wix Madefor Display Bold (it has every Lithuanian letter). `he`: Wix Madefor Hebrew SemiBold (`WMHTV8-SemiBold.ttf`, TrueType, SIL OFL, Hebrew + Latin + Cyrillic), no synthetic bold. Web UI: Wix Madefor Text (Google Fonts); Hebrew characters come from Wix Madefor Hebrew Regular and SemiBold (`WMHTV8-*.ttf`, `@font-face` limited to Hebrew by `unicode-range`, so other pages never load them; 700 falls back to 600). |
+| Hebrew names on `uk`/`en`/`lt` | Not printed, by decision (2026-10-21): their font has no Hebrew, and Israel has its own initiative and page (`/he/`). The skip dialog names them; no fallback font. |
 | Name style | Per locale: position and size range (`box`), colour (the template's own blue) and synthetic-bold strength, all in the template's own points. |
 | Name on certificate | Printed exactly as entered (no reordering, no case changes). Locale-specific normalisation only where the font cannot render the character. Letters with diacritics (`é`, `ñ`, `ü`, `ø`, `ł`, …) are never stripped or replaced. |
-| Zip entry names | Option B: keep the student's name with its original letters (including diacritics and Hebrew), with a leading number. Correct names matter more than ASCII-only. Must be verified on Windows and macOS. |
+| Zip entry names | Option B: keep the student's name with its original letters (including diacritics and Hebrew), with a leading number. Correct names matter more than ASCII-only. Must be verified on Windows and macOS. The archive itself is named in the page's language (`messages.archiveFileName`). |
 | README | Added (`README.md`), including "How to add a language". |
 | Everything else | Unchanged from v1: client-side only, no analytics, desktop only, 300-name limit. |
 
@@ -56,7 +56,7 @@ routing, rewrites, headers or redirects is verified on a Netlify deploy preview,
 
 ## Draft languages
 
-A locale has `status: 'ready' | 'draft'`. While `en` and `he` use a copy of the Ukrainian template, they are `draft`: the
+A locale has `status: 'ready' | 'draft'`. While `en` and `lt` use a copy of the Ukrainian template, and until their texts are reviewed (`he` too), they are `draft`: the
 certificate text would be Ukrainian on an English or Hebrew page. Draft locales work in `npm run dev` (so UI and RTL can be built
 and tested) and on Netlify deploy previews, so reviewers can open them by editing the language code in the URL. They are **not** reachable on
 the production site: there `/en/` or `/he/` is treated like any unsupported code and goes through language detection. They
@@ -83,7 +83,7 @@ a deploy-preview link and change the code themselves.
 | `templateUrl` | `/locales/<lang>/template.pdf` |
 | `fontUrl` | Font able to render this script (and Latin, for foreign names) |
 | `nameStyle` | `box` (name position/size range for this template), `color`, `emboldening` |
-| `csv.headerWords`, `csv.fallbackEncoding` | Header detection; legacy Excel encoding (`windows-1251` / `windows-1255` / `windows-1252`) |
+| `csv.headerWords`, `csv.fallbackEncoding` | Header detection; legacy Excel encoding (`windows-1251` / `windows-1255` / `windows-1252` / `windows-1257`) |
 | `normalizeName` policy | Which characters are rewritten (see below) |
 | `fileNameStrategy` | How zip entry names are built (see below) |
 
@@ -172,6 +172,10 @@ Per-locale strategy:
 | `uk` | Cyrillic is transliterated (KMU-2010) as today. Any other letter is **kept as is** (`José Шевченко` → `José_Shevchenko`). Fixes today's behaviour, where `é` is dropped (`Jos`). |
 | `en` | Keep Unicode letters, including diacritics (`José` stays `José`). No transliteration. |
 | `he` | Keep Unicode letters. NFC-normalise (macOS filesystems use NFD), replace whitespace runs with `_`. |
+| `lt` | Keep Unicode letters (`Žemaitė` stays `Žemaitė`), as `en`. |
+
+The archive is named per language, written like its entries: `sertyfikaty.zip` (uk, ASCII), `certificates.zip` (en),
+`תעודות.zip` (he), `sertifikatai.zip` (lt). A test keeps it a valid file name ending in `.zip`, ASCII for `kmu-2010`.
 
 Sanitising (shared by all strategies): keep letters, combining marks and digits (`\p{L}\p{M}\p{N}`); collapse everything else to `_`.
 Nothing is transliterated or stripped unless it is illegal in a file name. Apostrophes (`' ʼ ’` `` ` `` and the Hebrew geresh `׳`) are dropped
@@ -196,11 +200,11 @@ Each template has its own `nameStyle.box` (centre, max width, baselines, size ra
 
 | Locale | Template | Line | Box |
 |---|---|---|---|
-| `uk`, `en` | 2025 Ukrainian, 842 × 595 | y 337, x 151–691 | centre 421, width 520, baseline 350, 36–20 pt, two lines 26 pt from 346 |
+| `uk`, `en`, `lt` | 2025 Ukrainian, 842 × 595 | y 337, x 151–691 | centre 421, width 520, baseline 350, 36–20 pt, two lines 26 pt from 346 |
 | `he` | 2026 Hebrew, 1212.48 × 856.8 | y 437, x 394.5–818; label from y 495 | centre 606.25, width 408, baseline 450, 36–20 pt, two lines 22 pt from 447; colour `#116DFF`; SemiBold, no synthetic bold |
 
 A test checks that every box lies inside its template and that every template has A4-landscape proportions. Still to do (plan,
-Task 13): the final `uk` (redesign) and `en` templates, their boxes, and moving the 2025 template to `assets/` when it is replaced.
+Task 13): the final `uk` (redesign), `en` and `lt` templates, their boxes, and moving the 2025 template to `assets/` when it is replaced.
 
 ## Out of scope
 
@@ -209,8 +213,8 @@ design, any server-side processing.
 
 ## Open items
 
-- Final templates for `uk` (redesign) and `en`, and their calibration; their fonts (Hebrew is settled).
+- Final templates for `uk` (redesign), `en` and `lt`, and their calibration; their fonts (Hebrew is settled).
 - Niqqud positioning in the PDF (GPOS mark offsets are not applied by pdf-lib).
-- A TrueType (.ttf) build of Wix Madefor Hebrew, ideally also Bold: no whole-font embedding, standard font labelling, no synthetic bold.
 - The English UI names "Hour of AI"; which initiative the English page is for is still to be confirmed.
+- The Lithuanian name of the initiative, „DI valanda“, is a draft; the Lithuanian representative confirms it with the texts.
 - UI design (will replace markup and CSS only).

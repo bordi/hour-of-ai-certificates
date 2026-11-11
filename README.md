@@ -8,20 +8,22 @@ Everything happens in the browser. Names are never sent anywhere, there is no ba
 
 ## Languages
 
-The language is chosen by the code in the URL: `/uk/`, `/en/`, `/he/`. There is no language switcher.
+The language is chosen by the code in the URL: `/uk/`, `/en/`, `/he/`, `/lt/`. There is no language switcher.
 
 | Code | Language | Status |
 |---|---|---|
 | `uk` | Ukrainian | ready |
 | `en` | English | draft |
 | `he` | Hebrew (right to left) | draft |
+| `lt` | Lithuanian | draft |
 | `ar` | Arabic | not approved; may be added later |
 
 **Draft** means not ready for the live site yet: the final template, its calibration, reviewed texts and the zip check are not
-all in place (`he` has its final template; `en` still uses a copy of the Ukrainian one). Drafts are served by `npm run dev` and on
+all in place (`he` has its final template; `en` and `lt` still use a copy of the Ukrainian one). Drafts are served by `npm run dev` and on
 Netlify deploy previews, never on the production site.
 
-The Hebrew page is for the Israeli initiative [Hour of Vibe Code](https://hourofvibecode.co.il) ("שעת הוויב קוד").
+The Hebrew page is for the Israeli initiative [Hour of Vibe Code](https://hourofvibecode.co.il) ("שעת הוויב קוד"). The Lithuanian
+page is Hour of AI in Lithuania, adapted from the Ukrainian one.
 
 ### Which language a visitor gets
 
@@ -43,6 +45,9 @@ npm test          # unit tests (vitest)
 npm run build     # type check + production build into dist/
 npm run preview   # serve dist/ locally; behaves like production (no drafts)
 ```
+
+`tests/fixtures/` has class lists for checking the site by hand: Excel exports in each language's legacy encoding, a list with a
+name the font cannot draw, and lists at and over the 300-name limit. Upload them on a deploy preview.
 
 `vite dev` and `vite preview` serve `index.html` for every path, so they hide hosting problems. Anything about routing,
 rewrites, redirects or headers has to be checked on a Netlify deploy preview.
@@ -68,6 +73,7 @@ src/filenames.ts, zip.ts   file names inside the .zip
 src/preview.ts             pdf.js preview
 public/locales/<code>/     template.pdf and example.csv of each language
 public/fonts/              certificate fonts, the Hebrew UI font, and their licence
+tests/fixtures/            class lists for checking the site by hand
 docs/superpowers/          design specs and implementation plans
 ```
 
@@ -126,12 +132,12 @@ languages only on previews. Production never shows them.
 
 ## Known limits
 
-- `uk` and `en` print with Wix Madefor Display Bold, which has **no Hebrew**; there a Hebrew name is listed in a dialog that
+- `uk`, `en` and `lt` print with Wix Madefor Display Bold, which has **no Hebrew**; there a Hebrew name is listed in a dialog that
   offers to create certificates for the rest. This is intended: Israel has its own initiative and page (`/he/`). `he` prints with Wix Madefor Hebrew SemiBold, which covers Hebrew, Latin and Cyrillic.
 - **Niqqud** (Hebrew vowel marks) is not positioned correctly in the PDF yet: pdf-lib ignores the font's mark positioning.
 - pdf-lib cannot subset `.otf` (CFF) fonts correctly, so such a font would be embedded whole; all fonts in use are `.ttf`.
   Always check generated PDFs in a viewer other than the page preview (pdf.js hides this kind of problem), e.g. macOS
   Preview or Acrobat.
-- The English and Hebrew texts are a first draft and need a native speaker's review.
-- Final templates for `uk` (redesign) and `en` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
+- The English, Hebrew and Lithuanian texts are a first draft and need a native speaker's review.
+- Final templates for `uk` (redesign), `en` and `lt` are still to come (plan, task 13); `he` has its final template. The UI is not final either; texts live in the locale
   files, so a new design only replaces `index.html` and `src/styles.css`.

@@ -1,6 +1,6 @@
 # Hour of AI Multilingual Certificates Implementation Plan
 
-**Goal:** Serve the generator per language (`/uk/`, `/en/`, `/he/`) with per-language UI strings, template, font and import rules, including RTL for Hebrew.
+**Goal:** Serve the generator per language (`/uk/`, `/en/`, `/he/`, `/lt/`) with per-language UI strings, template, font and import rules, including RTL for Hebrew.
 
 **Architecture:** Same Vite + vanilla TypeScript page. A locale registry (`src/locales/`) replaces hard-coded Ukrainian strings and constants. A pure `detectLocale()` picks the language from the URL or `navigator.languages`. Pure modules stay unit-tested with Vitest; per-locale behaviour is passed in as parameters.
 
@@ -176,11 +176,23 @@ Partly blocked: the final designs exist only for `he` so far.
 - [x] Commits: `feat: print hebrew names with Wix Madefor Hebrew SemiBold`, `feat: show hebrew interface text in Wix Madefor Hebrew`
 
 **Still to do**
-- [ ] Final `uk` (redesign) and `en` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
+- [ ] Final `uk` (redesign), `en` and `lt` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
 - [ ] Decide whether and how to position niqqud.
 - [x] Ask for a TrueType (.ttf) build of Wix Madefor Hebrew (and Bold): received Regular and SemiBold (see above).
 - [ ] Check a Hebrew PDF in Acrobat and on a printer.
 - [ ] Which initiative the English page is for (it says "Hour of AI").
-- [ ] **Zip check on Windows and macOS** (Hebrew, accented and Ukrainian names): names correct in Explorer/Finder/Archive Utility.
-- [ ] Native-speaker review of the Hebrew and English UI strings.
+- [ ] **Zip check on Windows and macOS** (Hebrew, accented, Lithuanian and Ukrainian names; the archive names too): names correct in Explorer/Finder/Archive Utility.
+- [ ] Native-speaker review of the Hebrew, English and Lithuanian UI strings (Lithuanian: the Lithuanian representative, including the name „DI valanda“).
 - [ ] Flip `status` to `ready`. Commit per locale: `feat: enable <lang> locale`
+
+### Task 14: `lt` locale (draft), archive names, manual-check lists
+
+Requested 2026-11-11: Hour of AI in Lithuania, adapted from the Ukrainian page; a copy of the Ukrainian template until the design arrives.
+
+- [x] `src/locales/lt.ts`: messages modelled on `uk` (structure and tone), four plural forms (`one`/`few`/`many`/`other`; `many` is for fractions only); counts after a colon where the noun would need a case. Initiative named „DI valanda“ (draft). Wix Madefor Display Bold (every Lithuanian letter and „“), `windows-1257`, Lithuanian header words, `ʼ` only, `keep`, the Ukrainian template's name style.
+- [x] `public/locales/lt/`: copy of the Ukrainian template; example with ą č ę ė į š ū ž. Registered after `he`; a Lithuanian browser lands on `/lt/`.
+- [x] Checked: certificates with every Lithuanian letter (capitals and small, one and two lines) in the macOS renderer; `/lt/` in Chrome.
+- [x] The zip archive is named in the page's language (`messages.archiveFileName`): `sertyfikaty.zip`, `certificates.zip`, `תעודות.zip`, `sertifikatai.zip`. Checked with a real download in Chrome on every locale; entries carry the UTF-8 flag (macOS's command-line `unzip` shows them garbled, Archive Utility does not).
+- [x] `tests/fixtures/`: class lists for checking the site by hand (Excel encodings `windows-1251`/`1255`/`1257`, UTF-8 with BOM, a Hebrew name on `uk`/`en`, 300 and 301 names); `tests/fixtures.test.ts` keeps each one true to what it promises.
+- [ ] Review of the texts by the Lithuanian representative; final template and calibration; zip check on Windows; then `ready` (Task 13).
+- [x] Commits: `test: add class lists for checking the site by hand`, `feat: add lithuanian locale (draft)`, `feat: name the zip archive in the language of the page`
