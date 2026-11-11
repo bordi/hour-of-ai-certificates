@@ -177,8 +177,10 @@ Partly blocked: the final designs exist only for `he` so far.
 - [x] Commits: `feat: print hebrew names with Wix Madefor Hebrew SemiBold`, `feat: show hebrew interface text in Wix Madefor Hebrew`
 
 **Before the merge into `main`** (on the deploy preview of the latest push)
-- [ ] `tests/fixtures/he-300-names.txt` on `/he/` keeps its first name `נועה כהן` (header-row fix).
-- [ ] `tests/fixtures/he-niqqud.txt` on `/he/`: the marks sit on their letters in macOS Preview.
+- [x] `tests/fixtures/he-300-names.txt` on `/he/` keeps its first name `נועה כהן` (header-row fix). Verified by the user, 2026-11-11.
+- [x] `tests/fixtures/he-niqqud.txt` on `/he/`: the marks sit on their letters in macOS Preview. Verified by the user, 2026-11-11.
+
+Nothing blocks the merge any more: the functionality is verified on the deploy preview of `8a2df0b`. What is left is the review of the texts by native speakers, which only decides when a draft locale becomes `ready`.
 
 **Not blocking the merge** (needed before a locale becomes `ready`)
 - [ ] Final `uk` (redesign), `en` and `lt` templates at `public/locales/<lang>/template.pdf`; move the 2025 template to `assets/` when it is replaced (`template-2025.pdf` already lives there); calibrate their `nameStyle`; fonts for them.
